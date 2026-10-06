@@ -1,0 +1,30 @@
+## Interface: 120100
+## Title: StatsMythic
+## Notes: Panel de stats en vivo (actual/esperado) y comparacion de equipo en el tooltip, con pesos propios sacados de SimulationCraft.
+## Author: TavoD_Gus_KrG
+## Version: 1.13.4
+## SavedVariables: StatsMythicDB
+## X-License: MIT
+## X-Curse-Project-ID: 1730966
+
+Libs\LibStub\LibStub.lua
+Libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
+Libs\AceAddon-3.0\AceAddon-3.0.xml
+Libs\AceEvent-3.0\AceEvent-3.0.xml
+Libs\AceConsole-3.0\AceConsole-3.0.xml
+Libs\AceDB-3.0\AceDB-3.0.xml
+Libs\AceDBOptions-3.0\AceDBOptions-3.0.xml
+Libs\AceGUI-3.0\AceGUI-3.0.xml
+Libs\AceConfig-3.0\AceConfig-3.0.xml
+Libs\LibSharedMedia-3.0\LibSharedMedia-3.0.lua
+Libs\AceGUI-3.0-SharedMediaWidgets\widget.xml
+Libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
+Libs\LibDBIcon-1.0\lib.xml
+
+## Order is important: Core first, then modules that register with it, Config last
+Core.lua
+PlayerStats.lua
+Panel.lua
+Compare.lua
+CharacterPane.lua
+Config.lua

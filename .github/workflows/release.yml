@@ -1,0 +1,36 @@
+# Publishes StatsMythic when a version tag is pushed (e.g. v1.13.1).
+# The BigWigs packager builds the zip from .pkgmeta and uploads it to CurseForge
+# (X-Curse-Project-ID in the .toc) and as a GitHub release.
+# Publica StatsMythic al subir una etiqueta de versión (ej. v1.13.1).
+# El packager de BigWigs arma el zip según .pkgmeta y lo sube a CurseForge
+# (X-Curse-Project-ID del .toc) y como release de GitHub.
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  # Manual fallback to test the workflow without needing a tag push --
+  # see "Run workflow" on the Actions tab.
+  # Respaldo manual para probar el workflow sin necesitar un push de tag --
+  # ver "Run workflow" en la pestaña Actions.
+  workflow_dispatch:
+
+permissions:
+  contents: write # create the GitHub release / crear el release de GitHub
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      CF_API_KEY: ${{ secrets.CF_API_KEY }}
+      GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      # File always named StatsMythic.zip (stable download link); the version goes in the label.
+      # El archivo siempre se llama StatsMythic.zip (enlace de descarga fijo); la versión va en la etiqueta.
+      - uses: BigWigsMods/packager@v2
+        with:
+          args: -n "{package-name}:{package-name}-{project-version}"

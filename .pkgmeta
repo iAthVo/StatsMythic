@@ -1,0 +1,13 @@
+package-as: StatsMythic
+
+manual-changelog:
+  filename: docs/CHANGELOG.md
+  markup-type: markdown
+
+ignore:
+  - docs/DISENO.md
+  - docs/NOTAS_INTERNAS.md
+  - .github
+  - .gitignore
+  - .pkgmeta
+  - media
