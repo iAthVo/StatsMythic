@@ -2,7 +2,7 @@
 ## Title: StatsMythic
 ## Notes: Panel de stats en vivo (actual/esperado) y comparacion de equipo en el tooltip, con pesos propios sacados de SimulationCraft.
 ## Author: TavoD_Gus_KrG
-## Version: 1.13.5
+## Version: 1.14.0
 ## SavedVariables: StatsMythicDB
 ## X-License: MIT
 ## X-Curse-Project-ID: 1730966

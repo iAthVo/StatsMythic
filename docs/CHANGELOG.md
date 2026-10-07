@@ -3,6 +3,12 @@
 Versionado `X.Y.Z`: X = cambios grandes, Y = nuevas capacidades o ajustes
 visuales, Z = correcciones menores.
 
+## 1.14.0
+
+Nueva pestaña **"Barras de poder"** en `/stm config`, separada de Panel
+(vacía por ahora — los controles de barras se mudan ahí en una próxima
+versión).
+
 ## 1.13.5
 
 Repo de GitHub recreado desde cero después de varias vueltas de prueba y

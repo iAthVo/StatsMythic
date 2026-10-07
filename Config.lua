@@ -932,6 +932,17 @@ local function GetOptions()
 					},
 				},
 			},
+			-- New dedicated tab for Power Bars settings, split out of
+			-- Panel -- empty for now, controls move here next.
+			-- Nueva pestaña dedicada para la config de Barras de poder,
+			-- separada de Panel -- vacía por ahora, los controles se
+			-- mueven aquí después.
+			barsGroup = {
+				type = "group",
+				name = function() return L().barMode end,
+				order = 2.5,
+				args = {},
+			},
 			showStats = {
 				type = "group",
 				name = function() return L().showStatsHeader end,
