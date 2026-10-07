@@ -3,6 +3,13 @@
 Versionado `X.Y.Z`: X = cambios grandes, Y = nuevas capacidades o ajustes
 visuales, Z = correcciones menores.
 
+## 1.13.5
+
+Repo de GitHub recreado desde cero después de varias vueltas de prueba y
+error con el disparador de releases por tag. Confirmado que el workflow en
+sí funciona de punta a punta (permisos, API key de CurseForge, packager)
+vía disparo manual. Versión limpia para el primer tag real de este repo.
+
 ## 1.13.4
 
 Encontrada la causa real de que el workflow no disparara: los permisos de
