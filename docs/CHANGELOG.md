@@ -3,6 +3,27 @@
 Versionado `X.Y.Z`: X = cambios grandes, Y = nuevas capacidades o ajustes
 visuales, Z = correcciones menores.
 
+## 1.15.0
+
+**Cosméticos de barra, portados desde la copia experimental
+StatsMythic_Beta** tras validarse ahí a lo largo de varias vueltas de
+ajuste. "Panel" y "Barras de poder" se combinan en una sola pestaña, con
+"Modo Barras" como sección plegable:
+
+- **5 estilos**: Clásico, Neón, Minimalista, Curva, Curva Neón —
+  Curva/Curva Neón tienen esquinas redondeadas de verdad (incluida la
+  barra de overflow y el borde decorativo, que se adapta a la forma).
+- **Textura de relleno** seleccionable (LibSharedMedia).
+- **Modo ícono**: insignias propias por stat en vez de texto, con
+  tooltip al pasar el mouse para identificarlas.
+- **"Fondo de Barra"**: tinte de fondo configurable — tu color de clase
+  por defecto, o cualquier color que elijas, con opacidad ajustable.
+- **"Borde decorativo"**: marco ornamentado opcional, también con color
+  elegible (dorado por defecto).
+- Marcas de referencia (25/50/75%), modo daltónico, destello titilante.
+- Nueva sección **"Modo Texto"** (espejo de "Modo Barras") para ajustes
+  exclusivos de la lista de texto plano.
+
 ## 1.14.0
 
 Nueva pestaña **"Barras de poder"** en `/stm config`, separada de Panel

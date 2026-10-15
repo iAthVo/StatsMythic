@@ -174,8 +174,36 @@ local STRINGS = {
 		textAlign = "Alineacion del texto",
 		alignLeft = "Izquierda", alignCenter = "Centro", alignRight = "Derecha",
 		oneLineLayout = "Diseño en una sola linea",
-		barMode = "Barras de poder",
+		barMode = "Modo Barras",
 		barModeDesc = "Crit/Haste/Mastery/Versatility como barras que se llenan segun Personaje/Recomendado, con un destello en el borde de avance. Si se pasa del 100%, la barra se queda llena y una franja marca la vuelta extra.",
+		barStyle = "Estilo",
+		barStyleDesc = "Tema visual completo para las barras: que tan fuerte brilla el destello, si se ve el borde oscuro de fondo, y si lleva esquinas redondeadas (Curva y Curva Neon). Se ven mejor en alturas de barra normales -- en relaciones muy extremas de ancho/alto pueden notarse un poco menos redondeadas.",
+		styleClassic = "Clasico", styleNeon = "Neon", styleMinimal = "Minimalista", styleCurve = "Curva", styleCurveNeon = "Curva Neon",
+		barDecorativeBorder = "Borde decorativo",
+		barDecorativeBorderDesc = "Agrega un marco ornamentado alrededor de cada barra -- dorado por defecto, o el color que elijas en el swatch de al lado.",
+		barDecorBorderColorDesc = "Color del marco de 'Borde decorativo'. Sin elegir uno, usa el dorado por defecto.",
+		barDecorBorderColorReset = "Color dorado",
+		barDecorBorderColorResetDesc = "Vuelve 'Borde decorativo' a su dorado por defecto, en vez del color elegido a mano.",
+		barTexture = "Textura de relleno",
+		barTextureDesc = "Textura de la franja que se llena. La lista la completan los addons con texturas registradas via LibSharedMedia -- entre mas addons asi tengas, mas opciones aparecen aqui.",
+		barLabelMode = "Etiqueta del lado Personaje",
+		barLabelModeDesc = "Que se muestra del lado Personaje de cada barra: el texto con el numero, o el icono del stat.",
+		labelModeText = "Texto", labelModeIcon = "Icono",
+		barLabelIconSide = "Lado del icono",
+		barLabelIconSideDesc = "De que lado de la barra aparece el icono, cuando 'Etiqueta del lado Personaje' esta en modo Icono.",
+		sideLeft = "Izquierda", sideRight = "Derecha",
+		barClassTint = "Fondo de Barra",
+		barClassTintDesc = "Un lavado de color sobre el fondo vacio de la barra -- tu color de clase por defecto, o el que elijas en 'Color de fondo'. Opacidad ajustable en 'Opacidad de Fondo de Barras', baja por defecto para que nunca se confunda con el color propio del stat.",
+		barBgColor = "Color de fondo",
+		barBgColorDesc = "Color del 'Fondo de Barra' de arriba. Sin elegir uno, usa tu color de clase.",
+		barBgAlpha = "Opacidad de Fondo de Barras",
+		barBgAlphaDesc = "Que tan visible es el 'Fondo de Barra' -- solo importa mientras ese toggle este activo.",
+		barBgColorReset = "Color de clase",
+		barBgColorResetDesc = "Vuelve 'Fondo de Barra' a tu color de clase, en vez del color elegido a mano.",
+		barTicks = "Marcas de referencia",
+		barTicksDesc = "Lineas verticales en 25%, 50% y 75% de la barra, para ubicar el avance de un vistazo.",
+		barColorblind = "Modo daltonico",
+		barColorblindDesc = "Paleta alterna para Critico (naranja en vez de rojo) y Versatilidad (azul en vez de verde), para que no se confundan entre si.",
 		secondaryFormat = "Formato Personaje",
 		expectedFormat = "Formato Recomendado",
 		fmtNumberPercent = "Numero / Porcentaje",
@@ -267,8 +295,36 @@ local STRINGS = {
 		textAlign = "Text alignment",
 		alignLeft = "Left", alignCenter = "Center", alignRight = "Right",
 		oneLineLayout = "One line layout",
-		barMode = "Power bars",
+		barMode = "Bar Mode",
 		barModeDesc = "Crit/Haste/Mastery/Versatility as bars that fill according to Character/Recommended, with a glow at the leading edge. Past 100%, the bar stays full and a stripe marks the extra lap.",
+		barStyle = "Style",
+		barStyleDesc = "Full visual theme for the bars: how strong the glow is, whether the dark backdrop border shows, and whether it gets rounded corners (Curve and Curve Neon). Looks best at normal bar heights -- at very extreme width/height ratios the corners can read as slightly less round.",
+		styleClassic = "Classic", styleNeon = "Neon", styleMinimal = "Minimal", styleCurve = "Curve", styleCurveNeon = "Curve Neon",
+		barDecorativeBorder = "Decorative border",
+		barDecorativeBorderDesc = "Adds an ornate frame around each bar -- gold by default, or whatever color you pick in the swatch beside it.",
+		barDecorBorderColorDesc = "Color of the 'Decorative border' frame. Leave unset to use the default gold.",
+		barDecorBorderColorReset = "Gold color",
+		barDecorBorderColorResetDesc = "Sets 'Decorative border' back to its default gold, instead of a hand-picked color.",
+		barTexture = "Fill texture",
+		barTextureDesc = "Texture of the fill stripe. The list is filled in by other addons that register textures via LibSharedMedia -- the more of those you have, the more options show up here.",
+		barLabelMode = "Character-side label",
+		barLabelModeDesc = "What shows on the Character side of each bar: the text with the number, or the stat's icon.",
+		labelModeText = "Text", labelModeIcon = "Icon",
+		barLabelIconSide = "Icon side",
+		barLabelIconSideDesc = "Which side of the bar the icon appears on, when 'Character-side label' is set to Icon.",
+		sideLeft = "Left", sideRight = "Right",
+		barClassTint = "Bar Background",
+		barClassTintDesc = "A color wash over the bar's empty track -- your class color by default, or whatever you pick in 'Background color'. Opacity is adjustable in 'Bar Background Opacity', kept low by default so it never gets confused with the stat's own color.",
+		barBgColor = "Background color",
+		barBgColorDesc = "Color of the 'Bar Background' above. Leave unset to use your class color.",
+		barBgAlpha = "Bar Background Opacity",
+		barBgAlphaDesc = "How visible 'Bar Background' is -- only matters while that toggle is on.",
+		barBgColorReset = "Class color",
+		barBgColorResetDesc = "Sets 'Bar Background' back to your class color, instead of a hand-picked one.",
+		barTicks = "Reference ticks",
+		barTicksDesc = "Vertical lines at 25%, 50%, and 75% of the bar, to gauge progress at a glance.",
+		barColorblind = "Colorblind mode",
+		barColorblindDesc = "Alternate palette for Crit (orange instead of red) and Versatility (blue instead of green), so the two don't get mixed up.",
 		secondaryFormat = "Character Format",
 		expectedFormat = "Recommended Format",
 		fmtNumberPercent = "Number / Percent",
@@ -515,7 +571,7 @@ local function GetOptions()
 			panelGroup = {
 				type = "group",
 				name = function() return L().panelHeader end,
-				order = 2,
+				order = 3,
 				args = {
 					-- Slider (left) + dropdown (right) paired on the same
 					-- row. IMPORTANT: use width="relative" + relWidth=0.5,
@@ -558,7 +614,7 @@ local function GetOptions()
 						name = function() return L().width end,
 						order = 1,
 						width = "relative",
-						relWidth = 0.5,
+						relWidth = 0.46,
 						min = 120, max = 1000, step = 10,
 						get = function() return ns.db.profile.panel.width end,
 						set = function(_, v)
@@ -566,13 +622,36 @@ local function GetOptions()
 							if ns.Panel then ns.Panel:ApplyAppearance() end; RefreshAll()
 						end,
 					},
+					-- Small invisible gap between the slider/toggle column
+					-- and the dropdown column -- without it, AceConfig's
+					-- Flow layout packs 0.5+0.5 edge-to-edge with zero
+					-- space between them (see the note at the top of this
+					-- args table), which read as too cramped. One of these
+					-- sits at a half-integer `order` between every paired
+					-- row in this tab, left alone by renumbering anything
+					-- else.
+					-- Pequeño espacio invisible entre la columna de
+					-- sliders/toggles y la de dropdowns -- sin esto, el
+					-- layout Flow de AceConfig empaqueta 0.5+0.5 pegado sin
+					-- nada en medio (ver la nota al inicio de esta tabla de
+					-- args), lo que se veía muy amontonado. Uno de estos va
+					-- en un `order` de medio entero entre cada fila
+					-- emparejada de esta pestaña, sin tener que renumerar
+					-- nada más.
+					widthGap = {
+						type = "description",
+						name = "",
+						order = 1.5,
+						width = "relative",
+						relWidth = 0.08,
+					},
 					font = {
 						type = "select",
 						dialogControl = "LSM30_Font",
 						name = function() return L().font end,
 						order = 2,
 						width = "relative",
-						relWidth = 0.5,
+						relWidth = 0.46,
 						values = AceGUIWidgetLSMlists and AceGUIWidgetLSMlists.font,
 						get = function() return ns.db.profile.panel.font end,
 						set = function(_, v)
@@ -585,7 +664,7 @@ local function GetOptions()
 						name = function() return L().fontSize end,
 						order = 3,
 						width = "relative",
-						relWidth = 0.5,
+						relWidth = 0.46,
 						min = 8, max = 32, step = 1,
 						get = function() return ns.db.profile.panel.fontSize end,
 						set = function(_, v)
@@ -593,12 +672,19 @@ local function GetOptions()
 							if ns.Panel then ns.Panel:ApplyAppearance() end; RefreshAll()
 						end,
 					},
+					fontSizeGap = {
+						type = "description",
+						name = "",
+						order = 3.5,
+						width = "relative",
+						relWidth = 0.08,
+					},
 					textAlign = {
 						type = "select",
 						name = function() return L().textAlign end,
 						order = 4,
 						width = "relative",
-						relWidth = 0.5,
+						relWidth = 0.46,
 						values = function()
 							local l = L()
 							return { LEFT = l.alignLeft, CENTER = l.alignCenter, RIGHT = l.alignRight }
@@ -614,7 +700,7 @@ local function GetOptions()
 						name = function() return L().lineSpacing end,
 						order = 5,
 						width = "relative",
-						relWidth = 0.5,
+						relWidth = 0.46,
 						min = 10, max = 40, step = 1,
 						get = function() return ns.db.profile.panel.lineSpacing end,
 						set = function(_, v)
@@ -622,12 +708,19 @@ local function GetOptions()
 							RefreshAll()
 						end,
 					},
+					lineSpacingGap = {
+						type = "description",
+						name = "",
+						order = 5.5,
+						width = "relative",
+						relWidth = 0.08,
+					},
 					secondaryFormat = {
 						type = "select",
 						name = function() return L().secondaryFormat end,
 						order = 6,
 						width = "relative",
-						relWidth = 0.5,
+						relWidth = 0.46,
 						-- Exactly 3 choices (not 4) -- PERCENT_NUMBER
 						-- (percent first, number in parens) is
 						-- intentionally left out of the dropdown: it's
@@ -659,86 +752,12 @@ local function GetOptions()
 							RefreshAll()
 						end,
 					},
-					barSpacing = {
-						type = "range",
-						name = function() return L().barSpacing end,
-						desc = function() return L().barSpacingDesc end,
-						order = 11,
-						width = "relative",
-						relWidth = 0.5,
-						min = 0, max = 30, step = 1,
-						get = function() return ns.db.profile.panel.barSpacing end,
-						set = function(_, v)
-							ns.db.profile.panel.barSpacing = v
-							RefreshAll()
-						end,
-					},
-					-- Shares a row with "Bar spacing" -- bar height
-					-- (thickness) in "Power bars". (There used to be a
-					-- "Bar width" here, but it duplicated the panel's own
-					-- Width -- Panel.lua's ApplyAppearance already uses
-					-- panel.width - PADDING*2 for the bar's real width.
-					-- Height, not width, was the one actually missing.)
-					-- Comparte fila con "Espacio entre barras" -- alto
-					-- (grosor) de las barras en "Barras de poder". (Hubo
-					-- un "Ancho de las barras" aqui antes, pero duplicaba
-					-- el Ancho del panel -- ApplyAppearance en Panel.lua
-					-- ya usa panel.width - PADDING*2 para el ancho real
-					-- de la barra. Lo que de verdad faltaba era el alto,
-					-- no el ancho.)
-					barHeight = {
-						type = "range",
-						name = function() return L().barHeight end,
-						desc = function() return L().barHeightDesc end,
-						order = 11.5,
-						width = "relative",
-						relWidth = 0.5,
-						min = 6, max = 40, step = 1,
-						get = function() return ns.db.profile.panel.barHeight end,
-						set = function(_, v)
-							ns.db.profile.panel.barHeight = v
-							if ns.Panel then ns.Panel:ApplyAppearance() end; RefreshAll()
-						end,
-					},
-					-- Vertical gap between a bar's label and the bar
-					-- itself -- used to be a fixed value (BAR_LABEL_HEIGHT
-					-- in Panel.lua) with no control to move it.
-					-- Espacio vertical entre la etiqueta de una barra y la
-					-- barra misma -- antes era un valor fijo
-					-- (BAR_LABEL_HEIGHT en Panel.lua) sin ningun control
-					-- para moverlo.
-					barLabelGap = {
-						type = "range",
-						name = function() return L().barLabelGap end,
-						desc = function() return L().barLabelGapDesc end,
-						order = 11.6,
-						width = "relative",
-						relWidth = 0.5,
-						min = 0, max = 30, step = 1,
-						get = function() return ns.db.profile.panel.barLabelGap end,
-						set = function(_, v)
-							ns.db.profile.panel.barLabelGap = v
-							RefreshAll()
-						end,
-					},
-					-- Filler so "Label-to-bar gap" stays alone on its row
-					-- (same reason as the other fillers in this tab).
-					-- Relleno para que "Espacio etiqueta-barra" quede
-					-- solo en su fila (mismo motivo que los demas
-					-- rellenos de esta pestaña).
-					barLabelGapFiller = {
-						type = "description",
-						name = "",
-						order = 11.7,
-						width = "relative",
-						relWidth = 0.5,
-					},
 					expectedFormat = {
 						type = "select",
 						name = function() return L().expectedFormat end,
 						order = 8,
 						width = "relative",
-						relWidth = 0.5,
+						relWidth = 0.46,
 						-- Same 3-choices-not-4 reasoning as secondaryFormat
 						-- above.
 						-- Mismo razonamiento de 3-opciones-no-4 que
@@ -762,7 +781,7 @@ local function GetOptions()
 						name = function() return L().decimalPlaces end,
 						order = 7,
 						width = "relative",
-						relWidth = 0.5,
+						relWidth = 0.46,
 						min = 0, max = 3, step = 1,
 						get = function() return ns.db.profile.panel.decimalPlaces end,
 						set = function(_, v)
@@ -770,12 +789,19 @@ local function GetOptions()
 							RefreshAll()
 						end,
 					},
+					decimalPlacesGap = {
+						type = "description",
+						name = "",
+						order = 7.5,
+						width = "relative",
+						relWidth = 0.08,
+					},
 					showStatsMode = {
 						type = "select",
 						name = function() return L().showStatsMode end,
 						order = 10,
 						width = "relative",
-						relWidth = 0.5,
+						relWidth = 0.46,
 						values = function()
 							local l = L()
 							return { ALWAYS = l.modeAlways, IN_COMBAT = l.modeCombat, OUT_OF_COMBAT = l.modeOutOfCombat }
@@ -791,7 +817,7 @@ local function GetOptions()
 						name = function() return L().bgAlpha end,
 						order = 9,
 						width = "relative",
-						relWidth = 0.5,
+						relWidth = 0.46,
 						min = 0, max = 1, step = 0.05,
 						get = function() return ns.db.profile.panel.bgAlpha end,
 						set = function(_, v)
@@ -799,113 +825,620 @@ local function GetOptions()
 							if ns.Panel then ns.Panel:ApplyAppearance() end
 						end,
 					},
-					-- Toggles paired 50/50 (real relative width, not
-					-- "half" -- "half" is a fixed 85px in this AceConfig
-					-- build, too narrow for longer labels, which were
-					-- getting cut off).
-					-- Toggles emparejados 50/50 (ancho relativo real, no
-					-- "half" -- "half" es un valor fijo de 85px en esta
-					-- version de AceConfig, muy angosto para etiquetas
-					-- largas, que se veian cortadas).
-					fontOutline = {
-						type = "toggle",
-						name = function() return L().fontOutline end,
-						order = 12,
+					bgAlphaGap = {
+						type = "description",
+						name = "",
+						order = 9.5,
 						width = "relative",
-						relWidth = 0.5,
-						get = function() return ns.db.profile.panel.fontOutline end,
-						set = function(_, v)
-							ns.db.profile.panel.fontOutline = v
-							if ns.Panel then ns.Panel:ApplyAppearance() end
-						end,
+						relWidth = 0.08,
 					},
-					oneLineLayout = {
-						type = "toggle",
-						name = function() return L().oneLineLayout end,
-						order = 13,
-						width = "relative",
-						relWidth = 0.5,
-						get = function() return ns.db.profile.panel.oneLineLayout end,
-						set = function(_, v)
-							ns.db.profile.panel.oneLineLayout = v
-							RefreshAll()
-						end,
-					},
-					barMode = {
-						type = "toggle",
-						name = function() return L().barMode end,
-						desc = function() return L().barModeDesc end,
-						order = 14,
-						width = "relative",
-						relWidth = 0.5,
-						get = function() return ns.db.profile.panel.barMode end,
-						set = function(_, v)
-							ns.db.profile.panel.barMode = v
-							RefreshAll()
-						end,
-					},
-					showBorder = {
-						type = "toggle",
-						name = function() return L().showBorder end,
+					-- "Modo Texto" box -- mirrors "Modo Barras" below: holds
+					-- the settings that only do anything when Modo Barras
+					-- is OFF (the plain stat-list display). Right now
+					-- that's just "one line layout" -- it's disabled
+					-- whenever Modo Barras is on, since there's no list to
+					-- collapse into one line while bars are showing.
+					-- Caja "Modo Texto" -- espejo de "Modo Barras" mas
+					-- abajo: contiene los ajustes que solo hacen algo
+					-- cuando Modo Barras esta APAGADO (la lista de stats en
+					-- texto plano). Por ahora es solo "una sola linea" --
+					-- se bloquea cuando Modo Barras esta prendido, ya que
+					-- no hay lista que colapsar en una linea mientras se
+					-- muestran barras.
+					textGroup = {
+						type = "group",
+						inline = true,
+						name = "",
 						order = 15,
-						width = "relative",
-						relWidth = 0.5,
-						get = function() return ns.db.profile.panel.showBorder end,
-						set = function(_, v)
-							ns.db.profile.panel.showBorder = v
-							if ns.Panel then ns.Panel:ApplyAppearance() end
-						end,
+						args = {
+							oneLineLayout = {
+								type = "toggle",
+								name = function() return L().oneLineLayout end,
+								order = 1,
+								width = "relative",
+								relWidth = 0.5,
+								disabled = function() return ns.db.profile.panel.barMode end,
+								get = function() return ns.db.profile.panel.oneLineLayout end,
+								set = function(_, v)
+									ns.db.profile.panel.oneLineLayout = v
+									RefreshAll()
+								end,
+							},
+						},
 					},
-					locked = {
-						type = "toggle",
-						name = function() return L().locked end,
-						order = 16,
-						width = "relative",
-						relWidth = 0.5,
-						get = function() return ns.db.profile.panel.locked end,
-						set = function(_, v) ns.db.profile.panel.locked = v end,
-					},
-					-- Filler so "Lock position" stays alone on its row
-					-- (same reason as barSpacingFiller above).
-					-- Relleno para que "Bloquear posicion" quede solo en
-					-- su fila (mismo motivo que barSpacingFiller arriba).
-					lockedFiller = {
-						type = "description",
+					-- Bar cosmetics, folded inline into this same tab instead of a
+					-- separate one -- several Panel settings (font, text align, etc)
+					-- already apply to bar labels too, so splitting them across tabs
+					-- just meant hunting in two places. Disabled as a whole block
+					-- while "Modo Barras" itself is off, since none of them do
+					-- anything until bars are actually on.
+					-- Cosmeticos de barra, plegados dentro de esta misma pestaña en
+					-- vez de una aparte -- varios ajustes de Panel (fuente,
+					-- alineacion de texto, etc) ya aplican tambien a las etiquetas de
+					-- las barras, asi que separarlos en pestañas distintas solo
+					-- significaba buscar en dos lugares. Se bloquean todos en bloque
+					-- mientras "Modo Barras" este apagado, ya que ninguno hace nada
+					-- hasta que las barras esten activas de verdad.
+					barsGroup = {
+						type = "group",
+						inline = true,
+						-- No header text here -- the barMode checkbox right
+						-- below already shows "Modo Barras" as its own
+						-- label, so a group title with the same text just
+						-- duplicated it right above the checkbox.
+						-- Sin texto de encabezado aqui -- el checkbox de
+						-- barMode justo abajo ya muestra "Modo Barras" como
+						-- su propia etiqueta, asi que un titulo de grupo con
+						-- el mismo texto solo lo duplicaba justo encima del
+						-- checkbox.
 						name = "",
-						order = 16.5,
-						width = "relative",
-						relWidth = 0.5,
-					},
-					-- Draws each bar's label on top of the bar itself
-					-- (instead of in its own row above it) -- forces a
-					-- font outline always, regardless of "Font outline",
-					-- so the text stays readable no matter the bar's
-					-- current fill color (see ApplyAppearance).
-					-- Dibuja la etiqueta de cada barra encima de la barra
-					-- misma (en vez de en su propia fila arriba) --
-					-- fuerza contorno de fuente siempre, sin importar
-					-- "Contorno de fuente", para que el texto siga
-					-- leyendose bien sin importar el color de fondo
-					-- actual de la barra (ver ApplyAppearance).
-					barTextInside = {
-						type = "toggle",
-						name = function() return L().barTextInside end,
-						desc = function() return L().barTextInsideDesc end,
-						order = 16.6,
-						width = "relative",
-						relWidth = 0.5,
-						get = function() return ns.db.profile.panel.barTextInside end,
-						set = function(_, v)
-							ns.db.profile.panel.barTextInside = v
-							if ns.Panel then ns.Panel:ApplyAppearance() end; RefreshAll()
-						end,
-					},
-					barTextInsideFiller = {
-						type = "description",
-						name = "",
-						order = 16.7,
-						width = "relative",
-						relWidth = 0.5,
+						order = 20,
+						args = {
+							barMode = {
+								type = "toggle",
+								name = function() return L().barMode end,
+								desc = function() return L().barModeDesc end,
+								order = 1,
+								width = "relative",
+								relWidth = 0.5,
+								get = function() return ns.db.profile.panel.barMode end,
+								set = function(_, v)
+									ns.db.profile.panel.barMode = v
+									RefreshAll()
+								end,
+							},
+							-- Alone on its own row on purpose -- nothing should
+							-- pack onto the master toggle's row.
+							-- Sola en su propia fila a proposito -- nada deberia
+							-- amontonarse en la fila del toggle maestro.
+							barModeFiller = {
+								type = "description",
+								name = "",
+								order = 2,
+								width = "relative",
+								relWidth = 0.5,
+							},
+							-- Two parallel columns from here down: sliders paired
+							-- with dropdowns (left/right), then a gap, then toggles
+							-- also split left/right.
+							-- Dos columnas paralelas de aqui para abajo: sliders
+							-- emparejados con dropdowns (izq/der), despues un
+							-- espacio, despues toggles tambien divididos izq/der.
+							barSpacing = {
+								type = "range",
+								name = function() return L().barSpacing end,
+								desc = function() return L().barSpacingDesc end,
+								order = 3,
+								width = "relative",
+								relWidth = 0.46,
+								min = 0, max = 30, step = 1,
+								disabled = function() return not ns.db.profile.panel.barMode end,
+								get = function() return ns.db.profile.panel.barSpacing end,
+								set = function(_, v)
+									ns.db.profile.panel.barSpacing = v
+									RefreshAll()
+								end,
+							},
+							barSpacingGap = {
+								type = "description",
+								name = "",
+								order = 3.5,
+								width = "relative",
+								relWidth = 0.08,
+							},
+							barTexture = {
+								type = "select",
+								dialogControl = "LSM30_Statusbar",
+								name = function() return L().barTexture end,
+								desc = function() return L().barTextureDesc end,
+								order = 4,
+								width = "relative",
+								relWidth = 0.46,
+								disabled = function() return not ns.db.profile.panel.barMode end,
+								values = AceGUIWidgetLSMlists and AceGUIWidgetLSMlists.statusbar,
+								get = function() return ns.db.profile.panel.barTexture end,
+								set = function(_, v)
+									ns.db.profile.panel.barTexture = v
+									if ns.Panel then ns.Panel:ApplyAppearance() end
+								end,
+							},
+							barHeight = {
+								type = "range",
+								name = function() return L().barHeight end,
+								desc = function() return L().barHeightDesc end,
+								order = 5,
+								width = "relative",
+								relWidth = 0.46,
+								min = 6, max = 40, step = 1,
+								disabled = function() return not ns.db.profile.panel.barMode end,
+								get = function() return ns.db.profile.panel.barHeight end,
+								set = function(_, v)
+									ns.db.profile.panel.barHeight = v
+									if ns.Panel then ns.Panel:ApplyAppearance() end; RefreshAll()
+								end,
+							},
+							barHeightGap = {
+								type = "description",
+								name = "",
+								order = 5.5,
+								width = "relative",
+								relWidth = 0.08,
+							},
+							barLabelIconSide = {
+								type = "select",
+								name = function() return L().barLabelIconSide end,
+								desc = function() return L().barLabelIconSideDesc end,
+								order = 6,
+								width = "relative",
+								relWidth = 0.46,
+								disabled = function() return not ns.db.profile.panel.barMode end,
+								values = function()
+									local l = L()
+									return { LEFT = l.sideLeft, RIGHT = l.sideRight }
+								end,
+								get = function() return ns.db.profile.panel.barLabelIconSide end,
+								set = function(_, v)
+									ns.db.profile.panel.barLabelIconSide = v
+									RefreshAll()
+								end,
+							},
+							barLabelGap = {
+								type = "range",
+								name = function() return L().barLabelGap end,
+								desc = function() return L().barLabelGapDesc end,
+								order = 7,
+								width = "relative",
+								relWidth = 0.46,
+								min = 0, max = 30, step = 1,
+								disabled = function() return not ns.db.profile.panel.barMode end,
+								get = function() return ns.db.profile.panel.barLabelGap end,
+								set = function(_, v)
+									ns.db.profile.panel.barLabelGap = v
+									RefreshAll()
+								end,
+							},
+							barLabelGapGap = {
+								type = "description",
+								name = "",
+								order = 7.5,
+								width = "relative",
+								relWidth = 0.08,
+							},
+							barStyle = {
+								type = "select",
+								name = function() return L().barStyle end,
+								desc = function() return L().barStyleDesc end,
+								order = 8,
+								width = "relative",
+								relWidth = 0.46,
+								disabled = function() return not ns.db.profile.panel.barMode end,
+								values = function()
+									local l = L()
+									return {
+										CLASSIC = l.styleClassic,
+										NEON = l.styleNeon,
+										MINIMAL = l.styleMinimal,
+										CURVE = l.styleCurve,
+										CURVE_NEON = l.styleCurveNeon,
+									}
+								end,
+								get = function() return ns.db.profile.panel.barStyle end,
+								set = function(_, v)
+									ns.db.profile.panel.barStyle = v
+									if ns.Panel then ns.Panel:ApplyAppearance() end
+								end,
+							},
+							-- Used to be a blank filler (only 3 sliders existed
+							-- for 4 dropdowns) -- now a real 4th slider, so the
+							-- filler isn't needed here anymore.
+							-- Antes era un relleno en blanco (solo habia 3
+							-- sliders para 4 dropdowns) -- ahora es un 4to
+							-- slider real, asi que el relleno ya no hace falta
+							-- aqui.
+							barBgAlpha = {
+								type = "range",
+								name = function() return L().barBgAlpha end,
+								desc = function() return L().barBgAlphaDesc end,
+								order = 9,
+								width = "relative",
+								relWidth = 0.46,
+								min = 0, max = 1, step = 0.05,
+								disabled = function() return not (ns.db.profile.panel.barMode and ns.db.profile.panel.barClassTint) end,
+								get = function() return ns.db.profile.panel.barBgAlpha end,
+								set = function(_, v)
+									ns.db.profile.panel.barBgAlpha = v
+									if ns.Panel then ns.Panel:ApplyAppearance() end
+								end,
+							},
+							barBgAlphaGap = {
+								type = "description",
+								name = "",
+								order = 9.5,
+								width = "relative",
+								relWidth = 0.08,
+							},
+							barLabelMode = {
+								type = "select",
+								name = function() return L().barLabelMode end,
+								desc = function() return L().barLabelModeDesc end,
+								order = 10,
+								width = "relative",
+								relWidth = 0.46,
+								disabled = function() return not ns.db.profile.panel.barMode end,
+								values = function()
+									local l = L()
+									return { TEXT = l.labelModeText, ICON = l.labelModeIcon }
+								end,
+								get = function() return ns.db.profile.panel.barLabelMode end,
+								set = function(_, v)
+									ns.db.profile.panel.barLabelMode = v
+									RefreshAll()
+								end,
+							},
+							-- Full-width blank row -- breathing room between the
+							-- sliders/dropdowns block above and the toggles below.
+							-- "relative"/relWidth=1.0, not width="full" -- same
+							-- trap as width="half" (a fixed pixel value in this
+							-- AceConfig build, not a real percentage): "full"
+							-- wasn't reliably forcing the next row to start
+							-- fresh, which is how "Fondo de Barra" ended up
+							-- sharing a row with controls from up here.
+							-- Fila en blanco de ancho completo -- espacio para
+							-- respirar entre el bloque de sliders/dropdowns de
+							-- arriba y los toggles de abajo. "relative"/
+							-- relWidth=1.0, no width="full" -- misma trampa que
+							-- width="half" (un valor fijo en px en esta version
+							-- de AceConfig, no un porcentaje real): "full" no
+							-- forzaba de forma confiable que la siguiente fila
+							-- arrancara de cero, que es como "Fondo de Barra"
+							-- termino compartiendo fila con controles de aqui
+							-- arriba.
+							gridSpacer = {
+								type = "description",
+								name = " ",
+								order = 11,
+								width = "relative",
+								relWidth = 1.0,
+							},
+							-- showBorder/fontOutline/locked apply no matter the
+							-- display mode, so (unlike their bar-specific neighbors
+							-- on the same rows) they're never disabled here.
+							-- showBorder/fontOutline/locked aplican sin importar el
+							-- modo de pantalla, asi que (a diferencia de sus vecinos
+							-- especificos de barra en la misma fila) nunca se
+							-- bloquean aqui.
+							showBorder = {
+								type = "toggle",
+								name = function() return L().showBorder end,
+								order = 12,
+								width = "relative",
+								relWidth = 0.46,
+								get = function() return ns.db.profile.panel.showBorder end,
+								set = function(_, v)
+									ns.db.profile.panel.showBorder = v
+									if ns.Panel then ns.Panel:ApplyAppearance() end
+								end,
+							},
+							showBorderGap = {
+								type = "description",
+								name = "",
+								order = 12.5,
+								width = "relative",
+								relWidth = 0.08,
+							},
+							barColorblind = {
+								type = "toggle",
+								name = function() return L().barColorblind end,
+								desc = function() return L().barColorblindDesc end,
+								order = 13,
+								width = "relative",
+								relWidth = 0.46,
+								disabled = function() return not ns.db.profile.panel.barMode end,
+								get = function() return ns.db.profile.panel.barColorblind end,
+								set = function(_, v)
+									ns.db.profile.panel.barColorblind = v
+									if ns.Panel then ns.Panel:ApplyAppearance() end
+								end,
+							},
+							-- Moved to the LEFT side (was barDecorativeBorder's
+							-- spot) -- "Borde decorativo" moved to the right
+							-- to make room for its own color swatch + reset
+							-- button, same reasoning as "Fondo de Barra".
+							-- Movido al lado IZQUIERDO (era el lugar de
+							-- barDecorativeBorder) -- "Borde decorativo" se
+							-- movio a la derecha para dejarle espacio a su
+							-- propio swatch de color + boton de reinicio,
+							-- mismo razonamiento que "Fondo de Barra".
+							barTextInside = {
+								type = "toggle",
+								name = function() return L().barTextInside end,
+								desc = function() return L().barTextInsideDesc end,
+								order = 14,
+								width = "relative",
+								relWidth = 0.46,
+								disabled = function() return not ns.db.profile.panel.barMode end,
+								get = function() return ns.db.profile.panel.barTextInside end,
+								set = function(_, v)
+									ns.db.profile.panel.barTextInside = v
+									if ns.Panel then ns.Panel:ApplyAppearance() end; RefreshAll()
+								end,
+							},
+							barTextInsideGap = {
+								type = "description",
+								name = "",
+								order = 14.1,
+								width = "relative",
+								relWidth = 0.08,
+							},
+							-- "Borde decorativo" + its color swatch + its
+							-- reset button, grouped on one row -- same
+							-- pattern as "Fondo de Barra": no label on the
+							-- swatch (name = ""), reset button text trimmed
+							-- down, all three sized to fit this half of the
+							-- row (0.18+0.07+0.21 = 0.46).
+							-- "Borde decorativo" + su swatch de color + su
+							-- boton de reinicio, agrupados en una fila --
+							-- mismo patron que "Fondo de Barra": sin
+							-- etiqueta en el swatch (name = ""), texto del
+							-- boton de reinicio recortado, los tres medidos
+							-- para entrar en esta mitad de la fila
+							-- (0.18+0.07+0.21 = 0.46).
+							barDecorativeBorder = {
+								type = "toggle",
+								name = function() return L().barDecorativeBorder end,
+								desc = function() return L().barDecorativeBorderDesc end,
+								order = 14.2,
+								width = "relative",
+								relWidth = 0.18,
+								disabled = function() return not ns.db.profile.panel.barMode end,
+								get = function() return ns.db.profile.panel.barDecorativeBorder end,
+								set = function(_, v)
+									ns.db.profile.panel.barDecorativeBorder = v
+									if ns.Panel then ns.Panel:ApplyAppearance() end
+								end,
+							},
+							-- Lets the player pick the decorative border's
+							-- color instead of the fixed gold -- nil (never
+							-- picked) falls back to the old gold in
+							-- Panel.lua, so this swatch just shows white
+							-- until they choose something. No name text on
+							-- purpose (see above) -- the tooltip (desc)
+							-- still explains it on hover.
+							-- Deja que el jugador elija el color del borde
+							-- decorativo en vez del dorado fijo -- nil
+							-- (nunca elegido) cae al dorado de siempre en
+							-- Panel.lua, asi que esta muestra solo aparece
+							-- blanca hasta que elijan algo. Sin texto de
+							-- nombre a proposito (ver arriba) -- el tooltip
+							-- (desc) lo sigue explicando al pasar el mouse.
+							barDecorBorderColor = {
+								type = "color",
+								name = "",
+								desc = function() return L().barDecorBorderColorDesc end,
+								order = 14.3,
+								width = "relative",
+								relWidth = 0.07,
+								disabled = function() return not (ns.db.profile.panel.barMode and ns.db.profile.panel.barDecorativeBorder) end,
+								get = function()
+									local c = ns.db.profile.panel.barDecorBorderColor
+									if c then
+										return c[1], c[2], c[3]
+									end
+									return 1, 1, 1
+								end,
+								set = function(_, r, g, b)
+									ns.db.profile.panel.barDecorBorderColor = { r, g, b }
+									if ns.Panel then ns.Panel:ApplyAppearance() end
+								end,
+							},
+							-- Resets to the gold default -- no built-in
+							-- "clear" gesture on an AceConfig color swatch,
+							-- same reasoning as "Color de clase".
+							-- Vuelve al dorado por defecto -- un swatch de
+							-- color de AceConfig no trae un gesto de
+							-- "borrar" propio, mismo razonamiento que
+							-- "Color de clase".
+							barDecorBorderColorReset = {
+								type = "execute",
+								name = function() return L().barDecorBorderColorReset end,
+								desc = function() return L().barDecorBorderColorResetDesc end,
+								order = 14.4,
+								width = "relative",
+								relWidth = 0.21,
+								disabled = function() return not (ns.db.profile.panel.barMode and ns.db.profile.panel.barDecorativeBorder) end,
+								func = function()
+									ns.db.profile.panel.barDecorBorderColor = nil
+									if ns.Panel then ns.Panel:ApplyAppearance() end
+								end,
+							},
+							fontOutline = {
+								type = "toggle",
+								name = function() return L().fontOutline end,
+								order = 16,
+								width = "relative",
+								relWidth = 0.46,
+								get = function() return ns.db.profile.panel.fontOutline end,
+								set = function(_, v)
+									ns.db.profile.panel.fontOutline = v
+									if ns.Panel then ns.Panel:ApplyAppearance() end
+								end,
+							},
+							-- Same 0.08 gap as every other paired row in this
+							-- tab (not a smaller one) -- that's what lines
+							-- "Fondo de Barra" up with "Modo daltonico"/
+							-- "Texto dentro de la barra"/"Bloquear posicion"
+							-- directly below/above it, all starting at the
+							-- same column (0.46+0.08 = 0.54).
+							-- Mismo espacio de 0.08 que cualquier otra fila
+							-- emparejada de esta pestaña (no uno mas chico)
+							-- -- eso es lo que alinea "Fondo de Barra" con
+							-- "Modo daltonico"/"Texto dentro de la barra"/
+							-- "Bloquear posicion" justo arriba/abajo, todos
+							-- arrancando en la misma columna (0.46+0.08 =
+							-- 0.54).
+							fontOutlineGap = {
+								type = "description",
+								name = "",
+								order = 16.5,
+								width = "relative",
+								relWidth = 0.08,
+							},
+							-- "Fondo de Barra" + its color swatch + its reset
+							-- button, all on fontOutline's row -- no room for
+							-- a label on the swatch (name = "") or for the
+							-- reset button's full text, so both got trimmed
+							-- down to fit.
+							-- "Fondo de Barra" + su swatch de color + su
+							-- boton de reinicio, todos en la fila de
+							-- fontOutline -- no hay lugar para una etiqueta
+							-- en el swatch (name = "") ni para el texto
+							-- completo del boton de reinicio, asi que a los
+							-- dos se les recorto el ancho para que entraran.
+							barClassTint = {
+								type = "toggle",
+								name = function() return L().barClassTint end,
+								desc = function() return L().barClassTintDesc end,
+								order = 17,
+								width = "relative",
+								relWidth = 0.18,
+								disabled = function() return not ns.db.profile.panel.barMode end,
+								get = function() return ns.db.profile.panel.barClassTint end,
+								set = function(_, v)
+									ns.db.profile.panel.barClassTint = v
+									if ns.Panel then ns.Panel:ApplyAppearance() end
+								end,
+							},
+							-- Lets the player pick their own "Fondo de Barra"
+							-- color instead of always using their class color
+							-- -- nil (never picked) falls back to class color
+							-- in Panel.lua, so this swatch just shows white
+							-- until they actually choose something. No name
+							-- text on purpose (see above) -- the tooltip
+							-- (desc) still explains what it does on hover.
+							-- Deja que el jugador elija su propio color de
+							-- "Fondo de Barra" en vez de usar siempre su color
+							-- de clase -- nil (nunca elegido) cae al color de
+							-- clase en Panel.lua, asi que esta muestra solo
+							-- aparece blanca hasta que elijan algo de verdad.
+							-- Sin texto de nombre a proposito (ver arriba) --
+							-- el tooltip (desc) sigue explicando que hace al
+							-- pasar el mouse encima.
+							barBgColor = {
+								type = "color",
+								name = "",
+								desc = function() return L().barBgColorDesc end,
+								order = 17.2,
+								width = "relative",
+								relWidth = 0.07,
+								disabled = function() return not (ns.db.profile.panel.barMode and ns.db.profile.panel.barClassTint) end,
+								get = function()
+									local c = ns.db.profile.panel.barBgColor
+									if c then
+										return c[1], c[2], c[3]
+									end
+									return 1, 1, 1
+								end,
+								set = function(_, r, g, b)
+									ns.db.profile.panel.barBgColor = { r, g, b }
+									if ns.Panel then ns.Panel:ApplyAppearance() end
+								end,
+							},
+							-- Resets to the class-color default -- there's no
+							-- built-in "clear" gesture on an AceConfig color
+							-- swatch, so this is the only way back to nil
+							-- once a custom color has been picked. Shortened
+							-- label ("Color de clase"/"Class color" instead
+							-- of "Usar color de clase"/"Use class color") to
+							-- fit this row -- the desc tooltip still spells
+							-- out what it resets.
+							-- Vuelve al color de clase por defecto -- un
+							-- swatch de color de AceConfig no trae un gesto
+							-- de "borrar" propio, asi que esta es la unica
+							-- forma de volver a nil una vez elegido un color
+							-- propio. Etiqueta acortada ("Color de clase" en
+							-- vez de "Usar color de clase") para que entre en
+							-- esta fila -- el tooltip (desc) sigue
+							-- explicando que es lo que resetea.
+							barBgColorReset = {
+								type = "execute",
+								name = function() return L().barBgColorReset end,
+								desc = function() return L().barBgColorResetDesc end,
+								order = 17.4,
+								width = "relative",
+								-- fontOutline(0.46) + gap(0.08) + barClassTint
+								-- (0.18) + barBgColor(0.07) + this(0.21) = 1.0
+								-- exactly -- fills the rest of the row's
+								-- right-column slot (the same 0.46-wide slot
+								-- "Modo daltonico" etc. use), so its right
+								-- edge lands flush with the dropdown column's
+								-- right edge without spilling onto a new row.
+								-- fontOutline(0.46) + espacio(0.08) +
+								-- barClassTint(0.18) + barBgColor(0.07) +
+								-- este(0.21) = 1.0 exacto -- llena el resto
+								-- del espacio de la columna derecha de esta
+								-- fila (el mismo espacio de 0.46 que usan
+								-- "Modo daltonico" etc), para que su borde
+								-- derecho quede al ras con el borde derecho de
+								-- la columna de dropdowns sin desbordar a una
+								-- fila nueva.
+								relWidth = 0.21,
+								disabled = function() return not (ns.db.profile.panel.barMode and ns.db.profile.panel.barClassTint) end,
+								func = function()
+									ns.db.profile.panel.barBgColor = nil
+									if ns.Panel then ns.Panel:ApplyAppearance() end
+								end,
+							},
+							barTicks = {
+								type = "toggle",
+								name = function() return L().barTicks end,
+								desc = function() return L().barTicksDesc end,
+								order = 18,
+								width = "relative",
+								relWidth = 0.46,
+								disabled = function() return not ns.db.profile.panel.barMode end,
+								get = function() return ns.db.profile.panel.barTicks end,
+								set = function(_, v)
+									ns.db.profile.panel.barTicks = v
+									if ns.Panel then ns.Panel:ApplyAppearance() end
+								end,
+							},
+							barTicksGap = {
+								type = "description",
+								name = "",
+								order = 18.5,
+								width = "relative",
+								relWidth = 0.08,
+							},
+							locked = {
+								type = "toggle",
+								name = function() return L().locked end,
+								order = 19,
+								width = "relative",
+								relWidth = 0.46,
+								get = function() return ns.db.profile.panel.locked end,
+								set = function(_, v) ns.db.profile.panel.locked = v end,
+							},
+						},
 					},
 					-- Left-side filler to push "Reset position" toward
 					-- the right of its own row (instead of pinned left).
@@ -915,16 +1448,20 @@ local function GetOptions()
 					resetPositionFiller = {
 						type = "description",
 						name = "",
-						order = 17,
+						order = 35,
 						width = "relative",
-						relWidth = 0.5,
+						relWidth = 0.79,
 					},
+					-- Same relWidth as "Color de clase" (0.21) -- same
+					-- size, right edge lined up the same way.
+					-- Mismo relWidth que "Color de clase" (0.21) -- mismo
+					-- tamaño, borde derecho alineado de la misma forma.
 					resetPosition = {
 						type = "execute",
 						name = function() return L().resetPosition end,
-						order = 18,
+						order = 36,
 						width = "relative",
-						relWidth = 0.4,
+						relWidth = 0.21,
 						func = function()
 							ns.db.profile.panelPosition = { point = "CENTER", x = 0, y = 0 }
 							if ns.Panel then ns.Panel:ApplyPosition() end
@@ -932,21 +1469,10 @@ local function GetOptions()
 					},
 				},
 			},
-			-- New dedicated tab for Power Bars settings, split out of
-			-- Panel -- empty for now, controls move here next.
-			-- Nueva pestaña dedicada para la config de Barras de poder,
-			-- separada de Panel -- vacía por ahora, los controles se
-			-- mueven aquí después.
-			barsGroup = {
-				type = "group",
-				name = function() return L().barMode end,
-				order = 2.5,
-				args = {},
-			},
 			showStats = {
 				type = "group",
 				name = function() return L().showStatsHeader end,
-				order = 3,
+				order = 2,
 				args = {
 					allSecondaries = {
 						type = "toggle",

@@ -34,6 +34,19 @@ local defaults = {
 			barLabelGap = 14, -- vertical gap between a bar's label and the bar / espacio vertical entre etiqueta y barra
 			barTextInside = false, -- draw the label on top of the bar / dibujar la etiqueta encima de la barra
 
+			-- Power bar cosmetics / cosmeticos de las barras de poder
+			barStyle = "CLASSIC", -- CLASSIC | NEON | MINIMAL | CURVE | CURVE_NEON
+			barDecorativeBorder = false, -- ornate corner-accent frame / marco ornamentado en las esquinas
+			barDecorBorderColor = nil, -- {r,g,b} chosen by the player, nil = fall back to gold / {r,g,b} elegido por el jugador, nil = usa el dorado por defecto
+			barTexture = nil, -- LibSharedMedia "statusbar" name, nil = addon default / nil = el default del addon
+			barLabelMode = "TEXT", -- TEXT | ICON -- the Character side shows a number or a stat icon / el lado Personaje muestra un numero o el icono del stat
+			barLabelIconSide = "LEFT", -- LEFT | RIGHT -- only used when barLabelMode == "ICON"
+			barClassTint = false, -- "Fondo de Barra" toggle -- faint color wash on the empty track / toggle "Fondo de Barra" -- tinte sutil en el fondo vacio
+			barBgColor = nil, -- {r,g,b} chosen by the player, nil = fall back to class color / {r,g,b} elegido por el jugador, nil = usa el color de clase
+			barBgAlpha = 0.18, -- opacity of the above wash, only matters while barClassTint is on / opacidad del tinte de arriba, solo importa con barClassTint activo
+			barTicks = false, -- reference tick marks at 25/50/75% / marcas de referencia en 25/50/75%
+			barColorblind = false, -- alternate palette for the overflow stripe / paleta alterna para la franja de overflow
+
 			font = "Friz Quadrata TT",
 			fontSize = 12,
 			fontOutline = true,

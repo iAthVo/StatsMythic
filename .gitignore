@@ -8,3 +8,8 @@ desktop.ini
 
 # Editor config / Configuracion del editor
 .vscode/
+
+# Downloaded GitHub Actions run logs (debugging artifacts, never meant to
+# be committed) / Logs descargados de corridas de GitHub Actions
+# (artefactos de depuracion, nunca pensados para comitearse)
+logs/

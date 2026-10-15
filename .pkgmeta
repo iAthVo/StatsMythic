@@ -10,4 +10,22 @@ ignore:
   - .github
   - .gitignore
   - .pkgmeta
-  - media
+  # media/Icon and media/Mask are NOT ignored anymore -- the bar
+  # cosmetics (icon mode, Curve/Curve Neon styles) load these at
+  # runtime now, unlike the old media/ folder which was purely
+  # decorative screenshots/logo. Only the still-decorative files stay
+  # excluded, listed individually instead of the whole "media" folder.
+  # media/Icon y media/Mask ya no se ignoran -- los cosmeticos de barra
+  # (modo icono, estilos Curva/Curva Neon) cargan esto en tiempo real
+  # ahora, a diferencia de la vieja carpeta media/ que era puramente
+  # capturas/logo decorativos. Solo los archivos que siguen siendo
+  # decorativos se quedan excluidos, listados uno por uno en vez de
+  # toda la carpeta "media".
+  - media/ST.png
+  - media/SMBars.png
+  - media/SMEscalas.png
+  - media/SMEscalasPJ.png
+  - media/SMPanel.png
+  - media/SMPerfil.png
+  - media/SMStats.png
+  - media/Icon/Iconos.png
