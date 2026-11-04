@@ -3,6 +3,29 @@
 Versionado `X.Y.Z`: X = cambios grandes, Y = nuevas capacidades o ajustes
 visuales, Z = correcciones menores.
 
+## 2.0.0
+
+**Ver stats de otros jugadores (experimental)** — nuevo canal de
+comunicación addon-a-addon: pasa el mouse sobre el marco de un compañero
+de party/raid que también tenga StatsMythic para ver sus stats reales en
+un tooltip, o usa `/stm ver <nombre>` para pedírselos a cualquiera, dentro
+o fuera del grupo. Incluye un toggle de privacidad ("Compartir mis
+stats", pestaña nueva **Sincronización**) y, en la ventana de `/stm ver`,
+un cuadro con los números de ese jugador en formato Pawn, listo para
+copiar. Todavía no se probó en vivo entre dos jugadores distintos.
+
+Además, dos correcciones:
+
+- **Corregido: el panel nativo de personaje a veces no mostraba
+  "Óptimo"** al pasar el mouse sobre Crítico/Aceleración/Maestría/
+  Versatilidad — ahora reconoce la fila por su etiqueta de texto cuando
+  Blizzard no expone el identificador interno del stat.
+- **Corregido: las barras de poder podían quedarse congeladas** tras
+  varios cambios de equipo/especialización — Blizzard protege esos
+  valores durante Mítica+/JcJ (no es un bug nuestro); ahora un prefijo
+  `[P]` en rojo avisa cuando un stat está mostrando el último valor
+  conocido en vez de uno en vivo.
+
 ## 1.15.0
 
 **Cosméticos de barra, portados desde la copia experimental

@@ -1,6 +1,6 @@
 # StatsMythic Credits
 
-StatsMythic is a World of Warcraft addon created by TavoD_Gus_KrG, released
+StatsMythic is a World of Warcraft addon created by iAthVo_Kr, released
 under the MIT License.
 
 ## Bundled Libraries

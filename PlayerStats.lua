@@ -1,7 +1,7 @@
 --[[ StatsMythic · PlayerStats.lua
 Pure data module (no frames): reads live stats from Blizzard's own API and
 computes the "Recommended" proportional redistribution.
-© 2026 TavoD_Gus_KrG · MIT License ]]
+© 2026 iAthVo_Kr · MIT License ]]
 -- Comment style: English first, Spanish second.
 -- Estilo de comentarios: primero inglés, luego español.
 
@@ -34,15 +34,71 @@ PlayerStats.STAT_KEYS = STAT_KEYS
 -- el panel a cero en cuanto empezaba el combate).
 local lastGoodValues = {}
 
+-- Tracks which SafeNumber-protected keys are CURRENTLY frozen (still
+-- returning the cached last-known-good number because the game's own
+-- getter is returning a Secret Value right now) -- Panel.lua/
+-- CharacterPane.lua read this via IsStatFrozen() to mark a stat as
+-- protected instead of showing a frozen number that looks identical to a
+-- live one. Confirmed real behavior (warcraft.wiki.gg/wiki/Secret_Values):
+-- GetCombatRating is flagged SecretWhenUnitStatsRestricted, which can stay
+-- active for a whole Mythic+/PvP context, not just an instant combat flash.
+-- Rastrea que llaves protegidas por SafeNumber estan congeladas AHORITA
+-- (siguen devolviendo el ultimo numero bueno cacheado porque el getter
+-- real del juego esta devolviendo un "Secret Value" en este momento) --
+-- Panel.lua/CharacterPane.lua leen esto via IsStatFrozen() para marcar un
+-- stat como protegido en vez de mostrar un numero congelado identico a uno
+-- en vivo. Comportamiento real confirmado
+-- (warcraft.wiki.gg/wiki/Secret_Values): GetCombatRating esta marcada
+-- SecretWhenUnitStatsRestricted, que puede quedarse activa toda una corrida
+-- de Mitica+/contexto JcJ, no solo un flash instantaneo de combate.
+local frozenKeys = {}
+
 local function SafeNumber(key, value)
 	if type(value) == "number" then
 		local ok, result = pcall(function() return value + 0 end)
 		if ok then
 			lastGoodValues[key] = result
+			frozenKeys[key] = nil
 			return result
 		end
 	end
+	frozenKeys[key] = true
 	return lastGoodValues[key] or 0
+end
+
+-- Maps a Panel.lua/CharacterPane.lua-facing stat key to the internal
+-- SafeNumber cache keys that make it up, so callers don't need to know
+-- SafeNumber's own naming.
+-- Mapea una llave de stat como la ven Panel.lua/CharacterPane.lua a las
+-- llaves internas de cache de SafeNumber que la componen, para que quien
+-- llama no necesite conocer el nombrado interno de SafeNumber.
+local STAT_FROZEN_KEYS = {
+	crit = { "critRating", "critPct" },
+	haste = { "hasteRating", "hastePct" },
+	mastery = { "masteryRating", "masteryPct" },
+	vers = { "versRating", "versPct" },
+	leech = { "leechRating", "leechPct" },
+	avoidance = { "avoidanceRating", "avoidancePct" },
+	primary = { "primaryValue" },
+	ilvl = { "ilvlEquipped", "ilvlOverall" },
+}
+
+-- True while ANY value behind this stat key is currently frozen (showing a
+-- cached number instead of a fresh read from the game).
+-- Verdadero mientras CUALQUIER valor detras de esta llave de stat este
+-- congelado ahorita (mostrando un numero cacheado en vez de una lectura
+-- fresca del juego).
+function PlayerStats:IsStatFrozen(statKey)
+	local keys = STAT_FROZEN_KEYS[statKey]
+	if not keys then
+		return false
+	end
+	for _, k in ipairs(keys) do
+		if frozenKeys[k] then
+			return true
+		end
+	end
+	return false
 end
 
 local function DetectPrimaryStat()

@@ -1,6 +1,6 @@
 --[[ StatsMythic · Compare.lua
 Pawn-style item tooltip comparison, scored against one or more saved scales.
-© 2026 TavoD_Gus_KrG · MIT License ]]
+© 2026 iAthVo_Kr · MIT License ]]
 -- Comment style: English first, Spanish second.
 -- Estilo de comentarios: primero inglés, luego español.
 

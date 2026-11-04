@@ -5,7 +5,7 @@ A World of Warcraft (Retail) addon that combines a live stat panel
 weights you load yourself from your own SimulationCraft runs — no
 external website, no database, no simulation running inside the addon.
 
-**Author:** TavoD_Gus_KrG · **License:** [MIT](LICENSE) · see
+**Author:** iAthVo_Kr · **License:** [MIT](LICENSE) · see
 [CREDITS.md](CREDITS.md) for bundled libraries and data sources.
 
 🇬🇧 **[English](#english)** · 🇲🇽 **[Español](#español)**
@@ -178,6 +178,29 @@ PvE and PvP priorities at once, without switching which one is active),
 check **"Show in tooltip"** on that scale's card, in the "Character
 Scales" tab — it shows up as an extra line below the active scale's.
 
+### Viewing other players' stats (experimental)
+
+Hover a party/raid member's frame while they also run StatsMythic to see
+their real Crit/Haste/Mastery/Versatility/Leech/Avoidance and item level in
+a tooltip, or use `/stm ver <name>` to ask anyone for them, in or out of
+your group. Both sides need StatsMythic running, and the other player
+needs **"Share my stats"** enabled (on by default, in the **Sync** tab).
+
+There's no other way to read this: Blizzard's own API (the one behind the
+Armory website) can return another player's stats, but addon Lua has no
+network access at all — only another StatsMythic client can be the
+source.
+
+The `/stm ver <name>` window also shows that player's numbers as a
+Pawn-format string, ready to copy if you want to save them — note that
+these are their actual current numbers, not a simulated weight scale, so
+pasting them into "Paste Result" creates a differently-labeled scale, not
+an equivalent one.
+
+**This feature is experimental** — it hasn't been tested live between two
+separate players yet. If something looks off, `/stm errors` has the
+details.
+
 ### Configuration (`/stm config`)
 
 The panel is organized into tabs:
@@ -198,6 +221,9 @@ The panel is organized into tabs:
   position, reset position.
 - **Which stats to show**: an individual toggle per stat, plus a button
   to show/hide all 4 secondaries at once.
+- **Sync**: the **"Share my stats"** toggle (see "Viewing other players'
+  stats" above) — turn it off to stop responding to other players'
+  requests.
 - **Profiles**: all panel customization lives in an AceDB profile — you
   can create different profiles per character/spec and switch between
   them here. Weight scales are shared across all profiles (they're
@@ -218,6 +244,7 @@ The panel is organized into tabs:
 | `/stm debugchar` | With the character pane open, prints the internal name of each stat row (native or GW2_UI) |
 | `/stm debugseason` | Prints the detected season ID |
 | `/stm errors` (alias `/stm bugs`) | Opens a window with the last 10 Lua errors, in a selectable textbox. Needs `!BugGrabber` installed (ships with BugSack) |
+| `/stm ver <name>` | Requests another player's stats (experimental, see "Viewing other players' stats" above) |
 
 `/statsmythic` also works as a full alias for `/stm`.
 
@@ -420,6 +447,30 @@ marca **"Mostrar en tooltip"** en la tarjeta de esa escala, en la
 pestaña "Escalas de Personaje" — aparece como una línea más, debajo de
 la de la escala activa.
 
+### Ver stats de otros jugadores (experimental)
+
+Pasa el mouse sobre el marco de un compañero de party/raid que también
+tenga StatsMythic para ver su Crítico/Aceleración/Maestría/Versatilidad/
+Leech/Avoidance e item level reales en un tooltip, o usa `/stm ver
+<nombre>` para pedírselos a cualquiera, dentro o fuera de tu grupo. Ambos
+lados necesitan StatsMythic corriendo, y el otro jugador necesita
+**"Compartir mis stats"** activo (viene activado por default, en la
+pestaña **Sincronización**).
+
+No hay otra forma de leer esto: la API propia de Blizzard (la misma que
+usa la página del Armory) sí puede devolver los stats de otro jugador,
+pero el Lua de los addons no tiene ningún acceso a red — solo otro
+cliente de StatsMythic puede ser la fuente.
+
+La ventana de `/stm ver <nombre>` también muestra los números de ese
+jugador como un string formato Pawn, listo para copiar si quieres
+guardarlos — ojo que son sus números reales actuales, no un peso de
+escala simulado, así que pegarlos en "Pegar Resultado" crea una escala
+marcada distinto, no una equivalente.
+
+**Esta función es experimental** — todavía no se probó en vivo entre dos
+jugadores distintos. Si algo se ve raro, `/stm errors` tiene el detalle.
+
 ### Configuración (`/stm config`)
 
 El panel se organiza en pestañas:
@@ -443,6 +494,9 @@ El panel se organiza en pestañas:
   posición.
 - **Qué stats mostrar**: toggle individual por stat, más un botón para
   mostrar/ocultar los 4 secundarios de una vez.
+- **Sincronización**: el toggle **"Compartir mis stats"** (ver "Ver
+  stats de otros jugadores" más arriba) — desactívalo para dejar de
+  responder a las solicitudes de otros jugadores.
 - **Perfiles**: toda la personalización del panel vive en un perfil de
   AceDB — puedes crear perfiles distintos por personaje/spec y cambiar
   entre ellos desde aquí. Las escalas de pesos son compartidas entre
@@ -462,6 +516,7 @@ El panel se organiza en pestañas:
 | `/stm debugchar` | Con el panel de personaje abierto, imprime los nombres internos de cada fila de stat |
 | `/stm debugseason` | Imprime el ID de temporada detectado |
 | `/stm errors` (alias `/stm bugs`) | Abre una ventana con los últimos 10 errores de Lua, en un cuadro de texto seleccionable. Necesita `!BugGrabber` instalado (viene junto con BugSack) |
+| `/stm ver <nombre>` | Pide los stats de otro jugador (experimental, ver "Ver stats de otros jugadores" más arriba) |
 
 `/statsmythic` también funciona como alias completo de `/stm`.
 

@@ -1,6 +1,6 @@
 --[[ StatsMythic · Panel.lua
 The floating stat panel: plain list, one-line, and "Power bars" layouts.
-© 2026 TavoD_Gus_KrG · MIT License ]]
+© 2026 iAthVo_Kr · MIT License ]]
 -- Comment style: English first, Spanish second.
 -- Estilo de comentarios: primero inglés, luego español.
 
@@ -1155,6 +1155,30 @@ local function FormatSecondary(panel, label, actual, expected)
 	return string.format("%s: %s", label, actualStr)
 end
 
+-- Prefix shown on a stat's displayed text while SafeNumber (PlayerStats.lua)
+-- has it frozen on a cached value instead of a live one (Blizzard's own
+-- "Secret Value" protection, which can stay active a whole Mythic+/PvP
+-- context -- see IsStatFrozen). Without this, a frozen number looks
+-- identical to a live one and reads as the panel being stuck/broken. Plain
+-- ASCII + a standard |cAARRGGBB color escape instead of a Unicode emoji --
+-- the game's own UI fonts (Friz Quadrata TT etc.) aren't guaranteed to have
+-- emoji glyphs, a color-coded bracket always renders.
+-- Prefijo que se muestra en el texto de un stat mientras SafeNumber
+-- (PlayerStats.lua) lo tiene congelado en un valor cacheado en vez de uno
+-- en vivo (proteccion "Secret Value" propia de Blizzard, que puede quedarse
+-- activa toda una corrida de Mitica+/contexto JcJ -- ver IsStatFrozen). Sin
+-- esto, un numero congelado se ve identico a uno en vivo y se lee como que
+-- el panel esta trabado/roto. ASCII simple + el escape de color estandar
+-- |cAARRGGBB en vez de un emoji Unicode -- las fuentes propias de la UI del
+-- juego (Friz Quadrata TT, etc.) no tienen garantizados glifos de emoji, un
+-- corchete con color siempre se ve bien.
+local function LockPrefix(statKey)
+	if ns.PlayerStats:IsStatFrozen(statKey) then
+		return "|cffff6060[P]|r "
+	end
+	return ""
+end
+
 -- Resizes the curve mask to match the bar's CURRENT fill width instead
 -- of the whole track -- otherwise the mask's right-rounded-corner only
 -- ever lines up with the fill's leading edge when the bar happens to be
@@ -1209,10 +1233,11 @@ local function RefreshDynamicBarRow(row, key, panel, actual, expected)
 	-- Refresh) -- el valor en si (rating/porcentaje) tiene que seguir
 	-- mostrandose junto a el, asi que aqui solo se quita el prefijo
 	-- "LABELS[key]: ", nunca actualStr.
+	local lock = LockPrefix(key)
 	if panel.barLabelMode == "ICON" then
-		row.labelActual:SetText(actualStr)
+		row.labelActual:SetText(lock .. actualStr)
 	else
-		row.labelActual:SetText(string.format("%s: %s", LABELS[key], actualStr))
+		row.labelActual:SetText(lock .. string.format("%s: %s", LABELS[key], actualStr))
 	end
 
 	if not expected or not expected.rating or expected.rating <= 0 then
@@ -1279,10 +1304,11 @@ local function RefreshIlvlBarRow(row, equippedIlvl, overallIlvl, seasonData, ico
 	row.track:SetStatusBarColor(r, g, b)
 	row.spark:SetVertexColor(WarmTint({ r, g, b }, 0.35))
 
+	local lock = LockPrefix("ilvl")
 	if iconMode then
-		row.labelActual:SetText(string.format("%d / %d", equippedIlvl, overallIlvl))
+		row.labelActual:SetText(lock .. string.format("%d / %d", equippedIlvl, overallIlvl))
 	else
-		row.labelActual:SetText(string.format("%s: %d / %d", LABELS.ilvl, equippedIlvl, overallIlvl))
+		row.labelActual:SetText(lock .. string.format("%s: %d / %d", LABELS.ilvl, equippedIlvl, overallIlvl))
 	end
 
 	-- Season max goes on labelExpected, pinned to the bar's right edge the
@@ -1331,23 +1357,24 @@ function Panel:Refresh()
 	-- TextFor(key) sin 2do argumento, asi que conservan el texto completo
 	-- "nombre: valor" sin importar panel.barLabelMode.
 	local function TextFor(key, iconMode)
+		local lock = LockPrefix(key)
 		if key == "primary" then
 			if iconMode then
-				return tostring(primaryValue)
+				return lock .. tostring(primaryValue)
 			end
-			return string.format("%s: %d", primaryName, primaryValue)
+			return lock .. string.format("%s: %d", primaryName, primaryValue)
 		elseif key == "ilvl" then
-			return string.format("%s: %d / %d / %d", LABELS.ilvl, equippedIlvl, overallIlvl, seasonData.max or 0)
+			return lock .. string.format("%s: %d / %d / %d", LABELS.ilvl, equippedIlvl, overallIlvl, seasonData.max or 0)
 		elseif TERTIARY_KEYS[key] then
 			local dp = panel.decimalPlaces or 2
 			local t = tertiaries[key]
 			local valueStr = FormatOneSide(dp, panel.secondaryFormat, t.rating, t.pct)
 			if iconMode then
-				return valueStr
+				return lock .. valueStr
 			end
-			return string.format("%s: %s", LABELS[key], valueStr)
+			return lock .. string.format("%s: %s", LABELS[key], valueStr)
 		else
-			return FormatSecondary(panel, LABELS[key], actuals[key], expected[key])
+			return lock .. FormatSecondary(panel, LABELS[key], actuals[key], expected[key])
 		end
 	end
 

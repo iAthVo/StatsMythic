@@ -1,7 +1,7 @@
 --[[ StatsMythic · CharacterPane.lua
 Adds the "Recommended" value to each secondary stat's tooltip on the native
 Character pane ('C' key) and on GW2_UI's replacement.
-© 2026 TavoD_Gus_KrG · MIT License ]]
+© 2026 iAthVo_Kr · MIT License ]]
 -- Comment style: English first, Spanish second.
 -- Estilo de comentarios: primero inglés, luego español.
 
@@ -65,6 +65,67 @@ local STAT_ID_MAP = {
 	MASTERY = "mastery",
 	VERSATILITY = "vers",
 }
+
+-- Fallback for the native pane, confirmed needed via `/stm debugchar`
+-- (2026-11-03): CharacterStatsPane.statsFramePool's rows no longer carry a
+-- `.stat` field at all on this client (every row dumped `stat=nil`) -- that
+-- field was only ever verified against ElvUI's skin, not against
+-- Blizzard's own FrameXML, and evidently isn't (or is no longer) set
+-- there. Label/Value text on the pool frames IS real and populated, so
+-- this matches against Blizzard's own localized stat-name globals (used
+-- the same way by Pawn/LibOpenRaid, confirmed via their real source, not
+-- guessed) instead of a hardcoded English list -- works in any client
+-- language with no maintenance. Substring match, not ==, since the pane's
+-- Label text carries a trailing ":" these globals don't.
+-- Respaldo para el panel nativo, confirmado necesario via `/stm debugchar`
+-- (2026-11-03): las filas de CharacterStatsPane.statsFramePool ya no
+-- traen ningun campo `.stat` en este cliente (las 9 filas volcaron
+-- `stat=nil`) -- ese campo solo se habia verificado contra el skin de
+-- ElvUI, nunca contra el FrameXML propio de Blizzard, y evidentemente no
+-- esta (o ya no esta) puesto ahi. El texto de Label/Value de los frames
+-- del pool SI es real y esta poblado, asi que esto compara contra las
+-- globals localizadas propias de Blizzard para el nombre de cada stat
+-- (usadas igual por Pawn/LibOpenRaid, confirmado contra su codigo real,
+-- no adivinado) en vez de una lista fija en ingles -- funciona en
+-- cualquier idioma de cliente sin mantenimiento. Comparacion por
+-- substring, no ==, porque el texto de Label del panel trae un ":" al
+-- final que estas globals no tienen.
+local LABEL_TO_STAT = {
+	[STAT_CRITICAL_STRIKE] = "crit",
+	[STAT_HASTE] = "haste",
+	[STAT_MASTERY] = "mastery",
+	[STAT_VERSATILITY] = "vers",
+}
+
+-- [pooledFrame] = statKey ("crit"/"haste"/"mastery"/"vers"), or false if
+-- checked and no match (e.g. Armor/Stamina/Speed/Leech rows, which have no
+-- Optimo to show) -- computed once per physical frame via the Label-text
+-- fallback above, never recomputed on every hover.
+-- [pooledFrame] = statKey ("crit"/"haste"/"mastery"/"vers"), o false si ya
+-- se revisó y no hubo match (filas de Armadura/Aguante/Velocidad/Robo de
+-- vida, que no tienen Optimo que mostrar) -- se calcula una sola vez por
+-- frame fisico via el respaldo de texto de Label de arriba, nunca se
+-- recalcula en cada hover.
+local labelStatCache = {}
+
+local function DetectStatByLabel(frame)
+	local cached = labelStatCache[frame]
+	if cached ~= nil then
+		return cached or nil
+	end
+	local label = frame.Label and frame.Label:GetText()
+	local found = nil
+	if label then
+		for text, key in pairs(LABEL_TO_STAT) do
+			if label:find(text, 1, true) then
+				found = key
+				break
+			end
+		end
+	end
+	labelStatCache[frame] = found or false
+	return found
+end
 
 local hookedFrames = {} -- [pooledFrame] = true -- HookScript each physical frame only once / cada frame fisico se enlaza una sola vez
 
@@ -154,7 +215,7 @@ end
 local currentHoverFrame, currentHoverStatKey
 
 local function OnStatFrameEnter(frame)
-	local statKey = frame.stat and STAT_ID_MAP[frame.stat]
+	local statKey = (frame.stat and STAT_ID_MAP[frame.stat]) or DetectStatByLabel(frame)
 	if not statKey then
 		return
 	end

@@ -1,6 +1,6 @@
 --[[ StatsMythic · Core.lua
 Addon bootstrap, saved-variable defaults, and the core AceAddon lifecycle.
-© 2026 TavoD_Gus_KrG · MIT License ]]
+© 2026 iAthVo_Kr · MIT License ]]
 -- Comment style: English first, Spanish second.
 -- Estilo de comentarios: primero inglés, luego español.
 
@@ -24,6 +24,12 @@ local defaults = {
 		activeScale = nil,
 		panelPosition = { point = "CENTER", x = 0, y = 0 },
 		panelShown = true,
+		-- Whether other players running StatsMythic can pull your real
+		-- stats (hover on party/raid frame, or their own /stm ver).
+		-- Si otros jugadores con StatsMythic pueden pedir tus stats
+		-- reales (al pasar el mouse sobre tu marco de party/raid, o con
+		-- su propio /stm ver).
+		syncShareEnabled = true,
 		-- Everything about how the panel LOOKS is per-profile, so different
 		-- characters/specs can each have their own setup.
 		-- Todo lo visual del panel vive por perfil, asi cada
@@ -137,6 +143,7 @@ function StatsMythic:OnEnable()
 	SafeInit("Panel", ns.Panel)
 	SafeInit("Compare", ns.Compare)
 	SafeInit("CharacterPane", ns.CharacterPane)
+	SafeInit("Sync", ns.Sync)
 	SafeInit("Config", ns.Config)
 
 	CreateMinimapIcon()

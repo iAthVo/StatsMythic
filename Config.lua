@@ -1,7 +1,7 @@
 --[[ StatsMythic · Config.lua
 The `/stm config` AceConfig options table, scale management, and slash
 commands.
-© 2026 TavoD_Gus_KrG · MIT License ]]
+© 2026 iAthVo_Kr · MIT License ]]
 -- Comment style: English first, Spanish second.
 -- Estilo de comentarios: primero inglés, luego español.
 
@@ -219,6 +219,14 @@ local STRINGS = {
 		showBorder = "Mostrar borde",
 		showStatsHeader = "Mostrar Stats",
 		showAllSecondaries = "Ocultar Stats Secundarios",
+		syncHeader = "Sincronizacion",
+		syncShareLabel = "Compartir mis stats",
+		syncShareDesc = "Mientras esta activo, cualquier otro jugador con StatsMythic puede ver tus stats reales (al pasar el mouse sobre tu marco de party/raid, o con /stm ver). Desactivalo para dejar de responder a esas solicitudes.",
+		syncHelpText = "Pasa el mouse sobre el marco de party/raid de alguien con StatsMythic para ver sus stats reales en el tooltip, o usa /stm ver <nombre> para pedirselos a cualquiera (adentro o afuera de tu grupo). La ventana de /stm ver incluye un cuadro de texto con sus numeros en formato Pawn, listo para copiar (Ctrl+C) y pegar como una escala nueva en 'Pegar Resultado' si quieres guardarlos.",
+		syncWaiting = "Buscando a %s...",
+		syncNoResponse = "Sin respuesta de %s (puede que no tenga StatsMythic, este offline, o tenga la sincronizacion desactivada).",
+		syncCopyLabel = "Copiar como escala (Pawn) -- listo para Ctrl+C:",
+		syncTooltipWaiting = "StatsMythic: sincronizando...",
 		uiLanguage = "Idioma del menu",
 		showMinimapIcon = "Mostrar icono de minimapa",
 		profilesHeader = "Perfiles",
@@ -340,6 +348,14 @@ local STRINGS = {
 		showBorder = "Show border",
 		showStatsHeader = "Which stats to show",
 		showAllSecondaries = "Show/hide all 4 secondaries",
+		syncHeader = "Sync",
+		syncShareLabel = "Share my stats",
+		syncShareDesc = "While on, any other player running StatsMythic can see your real stats (by hovering your party/raid frame, or with /stm ver). Turn it off to stop responding to those requests.",
+		syncHelpText = "Hover someone's party/raid frame while they're running StatsMythic to see their real stats in the tooltip, or use /stm ver <name> to ask anyone for them (inside or outside your group). The /stm ver window includes a text box with their numbers in Pawn format, ready to copy (Ctrl+C) and paste as a new scale under 'Paste Result' if you want to keep them.",
+		syncWaiting = "Looking up %s...",
+		syncNoResponse = "No response from %s (they may not have StatsMythic, be offline, or have sync turned off).",
+		syncCopyLabel = "Copy as scale (Pawn) -- ready to Ctrl+C:",
+		syncTooltipWaiting = "StatsMythic: syncing...",
 		uiLanguage = "Menu language",
 		showMinimapIcon = "Show minimap icon",
 		profilesHeader = "Profiles",
@@ -368,6 +384,7 @@ local STRINGS = {
 local function L()
 	return STRINGS[ns.db.global.uiLocale] or STRINGS.es
 end
+ns.Config.L = L -- exposed so Sync.lua's tooltip hook can reuse the same locale strings / expuesto para que el tooltip de Sync.lua reuse las mismas cadenas de idioma
 
 local function GetActiveScale()
 	local name = ns.db.profile.activeScale
@@ -1490,6 +1507,27 @@ local function GetOptions()
 					},
 				},
 			},
+			sync = {
+				type = "group",
+				name = function() return L().syncHeader end,
+				order = 4,
+				args = {
+					shareEnabled = {
+						type = "toggle",
+						name = function() return L().syncShareLabel end,
+						desc = function() return L().syncShareDesc end,
+						order = 1,
+						width = "full",
+						get = function() return ns.db.profile.syncShareEnabled ~= false end,
+						set = function(_, v) ns.db.profile.syncShareEnabled = v end,
+					},
+					helpText = {
+						type = "description",
+						name = function() return L().syncHelpText end,
+						order = 2,
+					},
+				},
+			},
 		},
 	}
 end
@@ -1810,6 +1848,146 @@ local function OpenErrorViewer()
 	errorViewerFrame.stmEditBox:SetFocus()
 end
 
+-- "/stm ver <nombre>" window -- shows the synced data Sync.lua has cached
+-- for that name (requesting it fresh if there's nothing cached yet, same
+-- throttle Sync.lua already applies) plus a Pawn-format string of their
+-- real numbers in a highlighted, Ctrl+C-ready MultiLineEditBox, reusing
+-- the exact same copy convention as OpenErrorViewer above. The pasted
+-- name is deliberately tagged "sync real" so it never gets mistaken for an
+-- actual SimC weight scale if the player pastes it into "Pegar Resultado".
+-- Ventana de "/stm ver <nombre>" -- muestra los datos que Sync.lua ya
+-- tiene cacheados para ese nombre (pidiendolos de nuevo si no hay nada
+-- cacheado todavia, mismo throttle que ya aplica Sync.lua) mas un string
+-- en formato Pawn con sus numeros reales en un MultiLineEditBox resaltado,
+-- listo para Ctrl+C, reusando el mismo patron de copiado de
+-- OpenErrorViewer arriba. El nombre pegado se marca a proposito "sync
+-- real" para que nunca se confunda con una escala real de SimC si el
+-- jugador lo pega en "Pegar Resultado".
+local function BuildSyncPawnString(name, data)
+	local weights = {
+		string.format("%s=%d", data.primaryName, data.primary),
+		string.format("CritRating=%d", data.crit.rating),
+		string.format("HasteRating=%d", data.haste.rating),
+		string.format("MasteryRating=%d", data.mastery.rating),
+		string.format("Versatility=%d", data.vers.rating),
+	}
+	return string.format('( Pawn: v1: "%s (sync real, no es un peso SimC)": %s )', name, table.concat(weights, ", "))
+end
+
+local syncViewerFrame
+local syncViewerTicker
+
+-- Returns true while still waiting on data (caller keeps polling).
+-- Devuelve true mientras sigue esperando datos (quien llama sigue el poll).
+local function RefreshSyncViewer(name)
+	local data = ns.Sync and ns.Sync:GetCached(name)
+	if not data then
+		syncViewerFrame.stmSummary:SetText(string.format(L().syncWaiting, name))
+		syncViewerFrame.stmEditBox:SetText("")
+		return true
+	end
+
+	local specName
+	if data.specID and data.specID > 0 then
+		_, specName = GetSpecializationInfoByID(data.specID)
+	end
+	local lines = {
+		specName and string.format("%s - %s", name, specName) or name,
+		string.format("%s: %d", data.primaryName, data.primary),
+		string.format("%s: %d (%.2f%%)", ns.Panel.LABELS.crit, data.crit.rating, data.crit.pct),
+		string.format("%s: %d (%.2f%%)", ns.Panel.LABELS.haste, data.haste.rating, data.haste.pct),
+		string.format("%s: %d (%.2f%%)", ns.Panel.LABELS.mastery, data.mastery.rating, data.mastery.pct),
+		string.format("%s: %d (%.2f%%)", ns.Panel.LABELS.vers, data.vers.rating, data.vers.pct),
+		string.format("%s: %d (%.2f%%)", ns.Panel.LABELS.leech, data.leech.rating, data.leech.pct),
+		string.format("%s: %d (%.2f%%)", ns.Panel.LABELS.avoidance, data.avoidance.rating, data.avoidance.pct),
+		string.format("ilvl: %d / %d", data.ilvlEquipped, data.ilvlOverall),
+	}
+	syncViewerFrame.stmSummary:SetText(table.concat(lines, "\n"))
+	syncViewerFrame.stmEditBox:SetText(BuildSyncPawnString(name, data))
+	syncViewerFrame.stmEditBox:SetFocus()
+	if syncViewerFrame.stmEditBox.editBox then
+		syncViewerFrame.stmEditBox.editBox:HighlightText()
+	end
+	return false
+end
+
+local function OpenSyncViewer(name)
+	name = name:match("^%s*(.-)%s*$") -- trim / recortar espacios
+
+	local AceGUI = LibStub("AceGUI-3.0")
+	if not syncViewerFrame then
+		syncViewerFrame = AceGUI:Create("Frame")
+		syncViewerFrame:SetLayout("List")
+		syncViewerFrame:SetWidth(460)
+		syncViewerFrame:SetHeight(380)
+		syncViewerFrame:SetCallback("OnClose", function(widget)
+			widget:Hide()
+			if syncViewerTicker then
+				syncViewerTicker:Cancel()
+				syncViewerTicker = nil
+			end
+		end)
+
+		local summary = AceGUI:Create("Label")
+		summary:SetFullWidth(true)
+		syncViewerFrame.stmSummary = summary
+		syncViewerFrame:AddChild(summary)
+
+		local copyLabel = AceGUI:Create("Label")
+		copyLabel:SetFullWidth(true)
+		copyLabel:SetText(L().syncCopyLabel)
+		syncViewerFrame:AddChild(copyLabel)
+
+		local editbox = AceGUI:Create("MultiLineEditBox")
+		editbox:SetLabel("")
+		editbox:DisableButton(true)
+		editbox:SetNumLines(6)
+		editbox:SetFullWidth(true)
+		syncViewerFrame.stmEditBox = editbox
+		syncViewerFrame:AddChild(editbox)
+	end
+
+	syncViewerFrame:SetTitle("StatsMythic - " .. name)
+	syncViewerFrame:Show()
+
+	if syncViewerTicker then
+		syncViewerTicker:Cancel()
+		syncViewerTicker = nil
+	end
+
+	if ns.Sync then
+		ns.Sync:RequestStats(name)
+	end
+
+	-- One immediate check (covers the case where this name is already
+	-- cached); only starts the repeating poll if that first check came up
+	-- empty, stopping itself once data arrives or after ~5s (10 * 0.5s).
+	-- Un chequeo inmediato (cubre el caso de que este nombre ya este
+	-- cacheado); solo arranca el sondeo repetido si ese primer chequeo
+	-- salio vacio, deteniendose solo cuando llegan datos o tras ~5s
+	-- (10 * 0.5s).
+	local attempts = 0
+	local function Poll()
+		attempts = attempts + 1
+		local stillWaiting = RefreshSyncViewer(name)
+		if stillWaiting and attempts < 10 then
+			return
+		end
+		if stillWaiting then
+			syncViewerFrame.stmSummary:SetText(string.format(L().syncNoResponse, name))
+		end
+		if syncViewerTicker then
+			syncViewerTicker:Cancel()
+			syncViewerTicker = nil
+		end
+	end
+
+	if RefreshSyncViewer(name) then
+		attempts = 1
+		syncViewerTicker = C_Timer.NewTicker(0.5, Poll)
+	end
+end
+
 local function PrintStatus()
 	local name = ns.db.profile.activeScale or "(ninguna)"
 	local count = 0
@@ -2008,8 +2186,14 @@ function Config:Init()
 			if ns.Panel then ns.Panel:Refresh() end
 			if ns.CharacterPane then ns.CharacterPane:Refresh() end
 			self:Print("Objetivo de Esperado recalculado con tu rating actual.")
+		elseif cmd == "ver" then
+			if rest == "" then
+				self:Print("Uso: /stm ver <nombre>")
+			else
+				OpenSyncViewer(rest)
+			end
 		else
-			self:Print("Comandos: /stm config | lock | unlock | debugitem | debugchar | debugseason | status | errors | recalc")
+			self:Print("Comandos: /stm config | lock | unlock | debugitem | debugchar | debugseason | status | errors | recalc | ver <nombre>")
 		end
 	end
 end
