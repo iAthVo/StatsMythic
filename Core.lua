@@ -162,7 +162,7 @@ function StatsMythic:OnEnable()
 	-- Cualquier cosa que pueda cambiar un rating de combate en vivo,
 	-- buff/proc, o pieza de equipo refresca el panel, para que sea en vivo
 	-- y no una foto tomada solo al iniciar sesion.
-	self:RegisterEvent("PLAYER_EQUIPMENT_CHANGED", "OnStatsChanged")
+	self:RegisterEvent("PLAYER_EQUIPMENT_CHANGED", "OnEquipmentChanged")
 	self:RegisterEvent("COMBAT_RATING_UPDATE", "OnStatsChanged")
 	self:RegisterEvent("MASTERY_UPDATE", "OnStatsChanged")
 	self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED", "OnStatsChanged")
@@ -183,6 +183,13 @@ function StatsMythic:OnProfileChanged()
 		ns.Panel:ApplyAppearance()
 		ns.Panel:Refresh()
 	end
+end
+
+function StatsMythic:OnEquipmentChanged()
+	if ns.PlayerStats then
+		ns.PlayerStats:OnEquipmentChanged()
+	end
+	self:OnStatsChanged()
 end
 
 function StatsMythic:OnUnitEvent(event, unit)

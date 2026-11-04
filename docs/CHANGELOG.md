@@ -3,6 +3,24 @@
 Versionado `X.Y.Z`: X = cambios grandes, Y = nuevas capacidades o ajustes
 visuales, Z = correcciones menores.
 
+## 2.0.1
+
+Dos correcciones a "Esperado" (Recomendado), encontradas al comparar equipo
+de PvE contra equipo de PvP:
+
+- **Corregido: "Esperado" se quedaba pegado al equipo anterior al cambiar
+  de set completo** (por ejemplo, de PvE a PvP o viceversa) — el objetivo
+  se recalcula a propósito solo de vez en cuando (para que se quede
+  estable mientras pruebas una pieza suelta), pero nada lo volvía a
+  calcular al cambiar TODO el equipo de un jalón. Ahora lo hace solo, en
+  cuanto detecta un cambio grande de verdad — cambiar una sola pieza sigue
+  sin mover el objetivo.
+- **Corregido: un stat secundario con 0 de rating actual (ej. sin nada de
+  Crítico itemizado, común en cierto equipo PvP) mostraba "Esperado" en
+  0%**, aunque el número de rating sí estuviera bien calculado. Ahora usa
+  la conversión real de Blizzard en vez de estimarla a partir de tu rating
+  actual, así que funciona igual en 0 que en cualquier otro valor.
+
 ## 2.0.0
 
 **Ver stats de otros jugadores (experimental)** — nuevo canal de

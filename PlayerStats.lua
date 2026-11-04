@@ -20,6 +20,28 @@ ns.PlayerStats = PlayerStats
 local STAT_KEYS = { "crit", "haste", "mastery", "vers" }
 PlayerStats.STAT_KEYS = STAT_KEYS
 
+-- Maps each of our stat keys to Blizzard's CR_* constant, for
+-- GetCombatRatingBonusForCombatRatingValue(ratingIndex, value) -- the one
+-- Blizzard API that converts an ARBITRARY rating amount to a percent,
+-- independent of what the player currently has equipped (confirmed via
+-- warcraft.wiki.gg/wiki/API:GetCombatRatingBonusForCombatRatingValue). See
+-- GetExpected below for why this matters over GetCombatRatingBonus (which
+-- only reports the bonus from your CURRENT rating).
+-- Mapea cada una de nuestras llaves de stat a la constante CR_* de Blizzard,
+-- para GetCombatRatingBonusForCombatRatingValue(ratingIndex, value) -- la
+-- unica API de Blizzard que convierte una cantidad ARBITRARIA de rating a
+-- porcentaje, sin importar lo que el jugador tenga equipado ahorita
+-- (confirmado via
+-- warcraft.wiki.gg/wiki/API:GetCombatRatingBonusForCombatRatingValue). Ver
+-- GetExpected abajo para el porque esto importa sobre GetCombatRatingBonus
+-- (que solo reporta el bono de tu rating ACTUAL).
+local CR_BY_KEY = {
+	crit = CR_CRIT_MELEE,
+	haste = CR_HASTE_MELEE,
+	mastery = CR_MASTERY,
+	vers = CR_VERSATILITY_DAMAGE_DONE,
+}
+
 -- Blizzard's "Secret Values" protection: in some contexts (reliably during
 -- combat) combat-rating/unit-stat getters return a number that can be
 -- *displayed* but throws on arithmetic AND on comparison. Each named value
@@ -266,16 +288,24 @@ end
 
 -- The "budget" (total secondary rating) that Recommended redistributes by
 -- weight -- frozen instead of recalculated on every refresh, so the target
--- stays stable while swapping gear with the same scale. Recalculates only
--- on first use, or when the active scale changes (compared by table
--- identity, not name, so nothing has to hook every place that touches
--- profile.activeScale); can also be forced by hand with `/stm recalc`.
+-- stays stable while swapping a single piece of gear with the same scale.
+-- Recalculates on first use, when the active scale changes (compared by
+-- table identity, not name, so nothing has to hook every place that touches
+-- profile.activeScale), automatically when a PLAYER_EQUIPMENT_CHANGED swing
+-- is big enough to mean a whole different gear set (see MaybeRebaseBudget
+-- below -- this is what makes a PvE <-> PvP gear swap correct itself
+-- without `/stm recalc`), or still by hand with `/stm recalc` for anything
+-- that slips past the automatic check.
 -- El "presupuesto" (rating secundario total) que Recomendado reparte segun
 -- los pesos -- congelado en vez de recalculado en cada refresco, para que
--- el objetivo se quede estable mientras se prueba equipo con la misma
--- escala. Se recalcula solo la primera vez, o si cambia la escala activa
--- (comparada por identidad de tabla, no por nombre); tambien se puede
--- forzar a mano con `/stm recalc`.
+-- el objetivo se quede estable mientras se prueba una sola pieza de equipo
+-- con la misma escala. Se recalcula la primera vez, si cambia la escala
+-- activa (comparada por identidad de tabla, no por nombre), automaticamente
+-- cuando un PLAYER_EQUIPMENT_CHANGED trae un cambio lo bastante grande como
+-- para ser un set de equipo distinto (ver MaybeRebaseBudget abajo -- esto es
+-- lo que hace que cambiar entre equipo PvE y PvP se corrija solo, sin
+-- `/stm recalc`), o todavia a mano con `/stm recalc` para lo que se escape
+-- del chequeo automatico.
 local expectedBudget
 local lastScaleRef
 
@@ -289,18 +319,80 @@ function PlayerStats:RecalculateExpectedBudget(actuals)
 	return total
 end
 
+-- Equipment changes rebase the frozen budget automatically, but only when
+-- the swing is big enough to mean a genuinely different gear set (a full
+-- PvE <-> PvP swap) rather than a single piece -- so the "stable target
+-- while comparing items" behavior above still holds for that case.
+-- Debounced because swapping a full set (by hand or via Equipment Manager)
+-- fires one PLAYER_EQUIPMENT_CHANGED per slot, not one event total. Also
+-- covers the case where the very first budget calculation this session
+-- happened while every secondary stat was Secret-Values-frozen (e.g. UI
+-- loaded already inside a PvP instance) and locked in a budget of 0 --
+-- expectedBudget <= 0 always forces a rebase once a clean reading exists.
+-- Los cambios de equipo rebasan el presupuesto congelado automaticamente,
+-- pero solo cuando el cambio es lo bastante grande como para ser un set de
+-- equipo genuinamente distinto (un cambio completo PvE <-> PvP) y no una
+-- sola pieza -- asi el comportamiento de "objetivo estable mientras se
+-- comparan piezas" de arriba se sigue cumpliendo en ese caso. Con
+-- antirrebote porque cambiar un set completo (a mano o via Administrador de
+-- Equipo) dispara un PLAYER_EQUIPMENT_CHANGED por ranura, no un solo
+-- evento. Tambien cubre el caso donde el primer calculo del presupuesto en
+-- la sesion paso con todos los stats secundarios congelados por Secret
+-- Values (ej. la UI cargo ya adentro de una instancia JcJ) y dejo fijo un
+-- presupuesto de 0 -- expectedBudget <= 0 siempre fuerza un rebase en
+-- cuanto exista una lectura limpia.
+local REBASE_THRESHOLD = 0.15 -- 15% swing in total secondary rating / cambio de 15% en el rating secundario total
+local EQUIP_DEBOUNCE = 0.5 -- seconds / segundos
+local equipRebasePending = false
+
+local function MaybeRebaseBudget()
+	equipRebasePending = false
+	if expectedBudget == nil then
+		return -- nothing computed yet; the next GetExpected call seeds it fresh / nada calculado todavia; la proxima llamada a GetExpected lo siembra fresco
+	end
+
+	local actuals = PlayerStats:GetSecondaryActuals()
+	for _, key in ipairs(STAT_KEYS) do
+		if PlayerStats:IsStatFrozen(key) then
+			return -- wait for a clean reading instead of baking in a frozen one / espera una lectura limpia en vez de fijar una congelada
+		end
+	end
+
+	local total = 0
+	for _, key in ipairs(STAT_KEYS) do
+		total = total + (actuals[key] and actuals[key].rating or 0)
+	end
+
+	if expectedBudget <= 0 or math.abs(total - expectedBudget) / expectedBudget > REBASE_THRESHOLD then
+		PlayerStats:RecalculateExpectedBudget(actuals)
+		if ns.Panel then ns.Panel:Refresh() end
+		if ns.CharacterPane then ns.CharacterPane:Refresh() end
+	end
+end
+
+function PlayerStats:OnEquipmentChanged()
+	if equipRebasePending then
+		return
+	end
+	equipRebasePending = true
+	C_Timer.After(EQUIP_DEBOUNCE, MaybeRebaseBudget)
+end
+
 -- scale: {crit=weight, haste=weight, mastery=weight, vers=weight}, from the
 -- user's own SimC numbers. actuals: result of GetSecondaryActuals().
 -- Returns the same shape as actuals, so Panel.lua/CharacterPane.lua can
--- show either side directly. pct is a linear estimate derived from the
--- player's own current rating->percent ratio for that stat, not a second
--- Blizzard API call.
+-- show either side directly. pct comes from Blizzard's own
+-- GetCombatRatingBonusForCombatRatingValue (see the loop below) -- a real
+-- conversion, not a guess -- with the old current-ratio linear estimate
+-- kept only as a fallback if that API ever errors.
 -- scale: {crit=peso, haste=peso, mastery=peso, vers=peso}, de los numeros
 -- propios de SimC del usuario. actuals: resultado de GetSecondaryActuals().
 -- Devuelve la misma forma que actuals, para que Panel.lua/CharacterPane.lua
--- puedan mostrar cualquier lado directo. pct es una estimacion lineal
--- derivada de la propia relacion rating->porcentaje actual del jugador para
--- ese stat, no una segunda llamada a la API de Blizzard.
+-- puedan mostrar cualquier lado directo. pct sale de
+-- GetCombatRatingBonusForCombatRatingValue de Blizzard (ver el bucle abajo)
+-- -- una conversion real, no una adivinanza -- con la vieja estimacion
+-- lineal por proporcion actual solo como respaldo si esa API llega a
+-- tronar.
 function PlayerStats:GetExpected(scale, actuals)
 	local expected = {}
 	if not scale then
@@ -325,8 +417,46 @@ function PlayerStats:GetExpected(scale, actuals)
 		local rating = expectedBudget * (scale[key] or 0) / weightSum
 		local pct = 0
 		local a = actuals[key]
-		if a and a.rating and a.rating > 0 and a.pct then
-			pct = rating * (a.pct / a.rating)
+		if a and a.pct then
+			-- Preferred: ask Blizzard directly what percent the EXPECTED
+			-- rating would give, via GetCombatRatingBonusForCombatRatingValue
+			-- (takes an arbitrary rating amount, not just the one currently
+			-- equipped). a.pct includes a non-rating baseline for crit/
+			-- mastery (GetCritChance/GetMasteryEffect, unlike vers's own pct
+			-- which is already rating-only) -- isolate that baseline by
+			-- subtracting what the ACTUAL rating converts to, then add back
+			-- what the EXPECTED rating converts to. This is what makes a
+			-- stat sitting at 0 actual rating (real case: PvP gear with no
+			-- Crit itemized at all) still show a correct Expected percent
+			-- instead of 0 -- the old version divided by a.rating, which is
+			-- undefined/0 right when a.rating is 0.
+			-- Preferido: preguntarle a Blizzard directo que porcentaje daria
+			-- el rating ESPERADO, via
+			-- GetCombatRatingBonusForCombatRatingValue (acepta una cantidad
+			-- arbitraria de rating, no solo la equipada ahorita). a.pct
+			-- incluye una base sin rating para crit/mastery
+			-- (GetCritChance/GetMasteryEffect, a diferencia del pct de vers
+			-- que ya es puro rating) -- se aisla esa base restando lo que el
+			-- rating ACTUAL convierte, y se suma lo que el rating ESPERADO
+			-- convierte. Esto es lo que hace que un stat con 0 rating actual
+			-- (caso real: equipo PvP sin nada de Critico) siga mostrando un
+			-- porcentaje Esperado correcto en vez de 0 -- la version vieja
+			-- dividia entre a.rating, que es indefinido/0 justo cuando
+			-- a.rating es 0.
+			local crId = CR_BY_KEY[key]
+			local ok1, actualFromRating = pcall(GetCombatRatingBonusForCombatRatingValue, crId, a.rating or 0)
+			local ok2, expectedFromRating = pcall(GetCombatRatingBonusForCombatRatingValue, crId, rating)
+			if ok1 and ok2 and type(actualFromRating) == "number" and type(expectedFromRating) == "number" then
+				pct = (a.pct - actualFromRating) + expectedFromRating
+			elseif a.rating and a.rating > 0 then
+				-- Fallback for the rare case the precise API errors or isn't
+				-- available: the old linear estimate from the player's own
+				-- current ratio, same as before.
+				-- Respaldo para el caso raro de que la API precisa truene o
+				-- no este disponible: la vieja estimacion lineal desde la
+				-- propia proporcion actual del jugador, igual que antes.
+				pct = rating * (a.pct / a.rating)
+			end
 		end
 		expected[key] = { rating = rating, pct = pct }
 	end
