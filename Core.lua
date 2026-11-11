@@ -162,10 +162,24 @@ function StatsMythic:OnEnable()
 	-- Cualquier cosa que pueda cambiar un rating de combate en vivo,
 	-- buff/proc, o pieza de equipo refresca el panel, para que sea en vivo
 	-- y no una foto tomada solo al iniciar sesion.
-	self:RegisterEvent("PLAYER_EQUIPMENT_CHANGED", "OnEquipmentChanged")
+	self:RegisterEvent("PLAYER_EQUIPMENT_CHANGED", "RecheckExpectedBudget")
 	self:RegisterEvent("COMBAT_RATING_UPDATE", "OnStatsChanged")
 	self:RegisterEvent("MASTERY_UPDATE", "OnStatsChanged")
 	self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED", "OnStatsChanged")
+	-- Leaving any instance (an arena/M+/raid ending, or just a loading
+	-- screen) -- doesn't touch gear, so the PLAYER_EQUIPMENT_CHANGED
+	-- trigger never fires here. Needed so a budget that locked in at 0
+	-- while every secondary stat was Secret-Values-frozen inside the
+	-- instance can un-stick itself once you're out, instead of needing
+	-- `/reload` (see PlayerStats.lua:CheckExpectedBudget).
+	-- Salir de cualquier instancia (que termine una arena/Mitica+/banda, o
+	-- nada mas una pantalla de carga) -- no toca el equipo, asi que el
+	-- disparador de PLAYER_EQUIPMENT_CHANGED nunca dispara aqui. Hace
+	-- falta para que un presupuesto que quedo fijo en 0 mientras todos los
+	-- stats secundarios estaban congelados por Secret Values adentro de la
+	-- instancia se pueda destrabar solo al salir, en vez de necesitar
+	-- `/reload` (ver PlayerStats.lua:CheckExpectedBudget).
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "RecheckExpectedBudget")
 	-- AceEvent-3.0 has no unit-filtered RegisterUnitEvent (that's a raw Frame
 	-- API method) -- register plain and filter by unit inside the handler.
 	-- AceEvent-3.0 no tiene un RegisterUnitEvent filtrado por unidad (eso es
@@ -185,9 +199,14 @@ function StatsMythic:OnProfileChanged()
 	end
 end
 
-function StatsMythic:OnEquipmentChanged()
+-- Shared handler for PLAYER_EQUIPMENT_CHANGED and PLAYER_ENTERING_WORLD --
+-- see PlayerStats.lua:CheckExpectedBudget for why both need it.
+-- Handler compartido para PLAYER_EQUIPMENT_CHANGED y
+-- PLAYER_ENTERING_WORLD -- ver PlayerStats.lua:CheckExpectedBudget para el
+-- porque ambos lo necesitan.
+function StatsMythic:RecheckExpectedBudget()
 	if ns.PlayerStats then
-		ns.PlayerStats:OnEquipmentChanged()
+		ns.PlayerStats:CheckExpectedBudget()
 	end
 	self:OnStatsChanged()
 end

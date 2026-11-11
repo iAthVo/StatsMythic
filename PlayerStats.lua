@@ -319,34 +319,51 @@ function PlayerStats:RecalculateExpectedBudget(actuals)
 	return total
 end
 
--- Equipment changes rebase the frozen budget automatically, but only when
--- the swing is big enough to mean a genuinely different gear set (a full
--- PvE <-> PvP swap) rather than a single piece -- so the "stable target
--- while comparing items" behavior above still holds for that case.
+-- Two triggers rebase the frozen budget automatically: an equipment change
+-- big enough to mean a genuinely different gear set (a full PvE <-> PvP
+-- swap) rather than a single piece, and leaving an instance
+-- (PLAYER_ENTERING_WORLD -- an arena/M+/raid ending, or any loading
+-- screen) -- both call CheckExpectedBudget (Core.lua). A single swapped
+-- piece still leaves the "stable target while comparing items" behavior
+-- above alone, since that case never crosses REBASE_THRESHOLD.
 -- Debounced because swapping a full set (by hand or via Equipment Manager)
--- fires one PLAYER_EQUIPMENT_CHANGED per slot, not one event total. Also
--- covers the case where the very first budget calculation this session
--- happened while every secondary stat was Secret-Values-frozen (e.g. UI
--- loaded already inside a PvP instance) and locked in a budget of 0 --
--- expectedBudget <= 0 always forces a rebase once a clean reading exists.
--- Los cambios de equipo rebasan el presupuesto congelado automaticamente,
--- pero solo cuando el cambio es lo bastante grande como para ser un set de
--- equipo genuinamente distinto (un cambio completo PvE <-> PvP) y no una
--- sola pieza -- asi el comportamiento de "objetivo estable mientras se
--- comparan piezas" de arriba se sigue cumpliendo en ese caso. Con
--- antirrebote porque cambiar un set completo (a mano o via Administrador de
--- Equipo) dispara un PLAYER_EQUIPMENT_CHANGED por ranura, no un solo
--- evento. Tambien cubre el caso donde el primer calculo del presupuesto en
--- la sesion paso con todos los stats secundarios congelados por Secret
--- Values (ej. la UI cargo ya adentro de una instancia JcJ) y dejo fijo un
--- presupuesto de 0 -- expectedBudget <= 0 siempre fuerza un rebase en
--- cuanto exista una lectura limpia.
+-- fires one PLAYER_EQUIPMENT_CHANGED per slot, not one event total.
+-- PLAYER_ENTERING_WORLD is what fixes the real reported case: leaving an
+-- arena (or any restricted PvP/M+ content) with every secondary stat
+-- Secret-Values-frozen at the moment the budget was first calculated this
+-- session (e.g. UI loaded already inside the instance) locks the budget at
+-- 0 forever, because nothing about leaving the instance touches your gear
+-- -- PLAYER_EQUIPMENT_CHANGED alone never fires, so the old version needed
+-- a full `/reload` to reset `expectedBudget` back to nil. Now
+-- expectedBudget <= 0 always forces a rebase the next time ANY of these
+-- triggers sees a clean (unfrozen) reading, regardless of which one fired.
+-- Dos disparadores rebasan el presupuesto congelado automaticamente: un
+-- cambio de equipo lo bastante grande como para ser un set de equipo
+-- genuinamente distinto (un cambio completo PvE <-> PvP) en vez de una sola
+-- pieza, y salir de una instancia (PLAYER_ENTERING_WORLD -- que termine una
+-- arena/Mitica+/banda, o cualquier pantalla de carga) -- ambos llaman a
+-- CheckExpectedBudget (Core.lua). Una sola pieza cambiada sigue sin tocar
+-- el comportamiento de "objetivo estable mientras se comparan piezas" de
+-- arriba, porque ese caso nunca cruza REBASE_THRESHOLD.
+-- Con antirrebote porque cambiar un set completo (a mano o via
+-- Administrador de Equipo) dispara un PLAYER_EQUIPMENT_CHANGED por ranura,
+-- no un solo evento. PLAYER_ENTERING_WORLD es lo que arregla el caso real
+-- reportado: salir de una arena (o cualquier contenido JcJ/Mitica+
+-- restringido) con todos los stats secundarios congelados por Secret
+-- Values justo cuando se calculo el presupuesto por primera vez en la
+-- sesion (ej. la UI cargo ya adentro de la instancia) deja el presupuesto
+-- fijo en 0 para siempre, porque salir de la instancia no toca tu equipo
+-- -- PLAYER_EQUIPMENT_CHANGED solo nunca dispara, asi que la version vieja
+-- necesitaba un `/reload` completo para resetear `expectedBudget` de
+-- vuelta a nil. Ahora expectedBudget <= 0 siempre fuerza un rebase la
+-- proxima vez que CUALQUIERA de estos disparadores vea una lectura limpia
+-- (sin congelar), sin importar cual haya disparado.
 local REBASE_THRESHOLD = 0.15 -- 15% swing in total secondary rating / cambio de 15% en el rating secundario total
-local EQUIP_DEBOUNCE = 0.5 -- seconds / segundos
-local equipRebasePending = false
+local REBASE_CHECK_DEBOUNCE = 0.5 -- seconds / segundos
+local rebaseCheckPending = false
 
 local function MaybeRebaseBudget()
-	equipRebasePending = false
+	rebaseCheckPending = false
 	if expectedBudget == nil then
 		return -- nothing computed yet; the next GetExpected call seeds it fresh / nada calculado todavia; la proxima llamada a GetExpected lo siembra fresco
 	end
@@ -370,12 +387,14 @@ local function MaybeRebaseBudget()
 	end
 end
 
-function PlayerStats:OnEquipmentChanged()
-	if equipRebasePending then
+-- Called from Core.lua on PLAYER_EQUIPMENT_CHANGED and PLAYER_ENTERING_WORLD.
+-- Llamado desde Core.lua en PLAYER_EQUIPMENT_CHANGED y PLAYER_ENTERING_WORLD.
+function PlayerStats:CheckExpectedBudget()
+	if rebaseCheckPending then
 		return
 	end
-	equipRebasePending = true
-	C_Timer.After(EQUIP_DEBOUNCE, MaybeRebaseBudget)
+	rebaseCheckPending = true
+	C_Timer.After(REBASE_CHECK_DEBOUNCE, MaybeRebaseBudget)
 end
 
 -- scale: {crit=weight, haste=weight, mastery=weight, vers=weight}, from the

@@ -3,6 +3,18 @@
 Versionado `X.Y.Z`: X = cambios grandes, Y = nuevas capacidades o ajustes
 visuales, Z = correcciones menores.
 
+## 2.0.2
+
+- **Compatibilidad actualizada al parche 12.1.5** (y declarada también para
+  12.1.7) — antes seguía marcada para 12.1.0.
+- **Corregido: al salir de una arena (o de Mítica+/una banda), "Esperado"
+  podía quedarse en 0 y las barras desaparecer, hasta hacer `/reload`.**
+  Mismo mecanismo que las correcciones de 2.0.1 (Blizzard oculta los stats
+  de combate durante ese contenido), pero salir de ahí no cambia tu
+  equipo, así que el aviso automático de 2.0.1 no se enteraba — ahora
+  también escucha cuando sales de cualquier instancia. **Corregido pero
+  todavía sin confirmar jugando una arena real.**
+
 ## 2.0.1
 
 Dos correcciones a "Esperado" (Recomendado), encontradas al comparar equipo
